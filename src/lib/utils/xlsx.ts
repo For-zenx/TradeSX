@@ -1,5 +1,5 @@
 // src/lib/utils/xlsx.ts
-import type { RawTrade, FormattedTrade } from '$interfaces/trades';
+import type { RawTrade, FormattedTrade } from '$lib/interfaces/trades';
 
 export function convertExcelValue(value: unknown): number {
     if (typeof value === 'number') return value;

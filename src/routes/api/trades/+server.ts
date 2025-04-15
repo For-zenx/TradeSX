@@ -1,7 +1,7 @@
 // src/routes/api/trades/+server.ts
 import * as XLSX from 'xlsx';
 import { json } from '@sveltejs/kit';
-import type { ApiResponse, RawTrade } from '$interfaces/trades';
+import type { ApiResponse, RawTrade } from '$lib/interfaces/trades';
 import { processTradeRow } from '$lib/utils/xlsx';
 
 export async function GET({ fetch }: { fetch: typeof globalThis.fetch }): Promise<Response> {
