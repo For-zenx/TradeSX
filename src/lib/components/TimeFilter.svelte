@@ -2,79 +2,100 @@
     import { nyTime } from '$lib/stores/timeStore';
     import { onDestroy } from 'svelte';
 
-    interface TimeFilterOption {
-        text: string;
-        value: string;
-    }
+    // 1. Tipos y constantes
+    type DateRange = {
+        label: string;
+        start: string;
+        end: string;
+        key: string;
+    };
 
-    type FilterTabs = 'Histórico';
-    type TimeFilters = Record<FilterTabs, TimeFilterOption[]>;
+    const FILTER_TABS = ['Histórico'] as const;
+    type FilterTab = typeof FILTER_TABS[number];
 
-    let currentNyDate: Date;
-    const unsubscribe = nyTime.subscribe((time: { dateString: string }) => {
-        currentNyDate = new Date(time.dateString.split('/').reverse().join('-'));
+    // 2. Estado del componente
+    let currentDate: Date = new Date();
+    let selectedTab: FilterTab = 'Histórico';
+    let selectedRange = 'all';
+
+    // 3. Configuración de suscripción
+    const unsubscribe = nyTime.subscribe(({ dateString }) => {
+        currentDate = new Date(dateString.split('/').reverse().join('-'));
     });
-
     onDestroy(unsubscribe);
 
-    function getDateRange(days: number): string {
-        const date = new Date(currentNyDate);
+    // 4. Funciones de utilidad
+    const formatDate = (date: Date) => date.toISOString().split('T')[0];
+    const getFirstDay = (date: Date) => new Date(date.getFullYear(), date.getMonth(), 1);
+    const getLastDay = (date: Date) => new Date(date.getFullYear(), date.getMonth() + 1, 0);
+    const getPrevDate = (days: number) => {
+        const date = new Date(currentDate);
         date.setDate(date.getDate() - days);
-        return date.toISOString().split('T')[0];
-    }
+        return date;
+    };
 
-    function getFilterTabs(filters: TimeFilters): FilterTabs[] {
-        return Object.keys(filters) as FilterTabs[];
-    }
+    // 5. Generación de filtros
+    const createFilter = (label: string, start: Date | string, end: Date | string, key: string): DateRange => ({
+        label,
+        start: typeof start === 'string' ? start : formatDate(start),
+        end: typeof end === 'string' ? end : formatDate(end),
+        key
+    });
 
-    $: timeFilters = {
+    $: dateFilters = {
         'Histórico': [
-            { text: 'Todo', value: 'all' },
-            { text: 'Últimos 12 meses', value: getDateRange(365) },
-            { text: 'Últimos 6 meses', value: getDateRange(180) },
-            { text: 'Últimos 3 meses', value: getDateRange(90) },
-            { text: 'Mes anterior', value: getDateRange(30) },
-            { text: 'Mes actual', value: currentNyDate?.toISOString().split('T')[0] },
-            { text: 'Ayer', value: getDateRange(1) },
-            { text: 'Hoy', value: currentNyDate?.toISOString().split('T')[0] }
+            createFilter('Todo', '2000-01-01', currentDate, 'all'),
+            createFilter('12 meses', getPrevDate(365), currentDate, '12m'),
+            createFilter('6 meses', getPrevDate(180), currentDate, '6m'),
+            createFilter('3 meses', getPrevDate(90), currentDate, '3m'),
+            createFilter('Mes anterior', getFirstDay(getPrevDate(30)), getLastDay(getPrevDate(30)), 'last-month'),
+            createFilter('Este mes', getFirstDay(currentDate), currentDate, 'current-month'),
+            createFilter('Ayer', getPrevDate(1), getPrevDate(1), 'yesterday'),
+            createFilter('Hoy', currentDate, currentDate, 'today')
         ]
-    } satisfies TimeFilters;
+    };
 
-    let selectedTab: FilterTabs = 'Histórico';
-    let selectedFilter: string = 'all';
-
-    function handleFilterChange(tab: FilterTabs, value: string): void {
+    // 6. Manejo de eventos
+    const selectFilter = (tab: FilterTab, rangeKey: string) => {
         selectedTab = tab;
-        selectedFilter = value;
-    }
+        selectedRange = rangeKey;
+    };
 </script>
 
-<div class="flex flex-col border-b border-gray-200 mt-4">
+<div class="flex flex-col border-b border-gray-200">
+    <!-- Pestañas -->
     <div class="flex">
-        {#each getFilterTabs(timeFilters) as tab}
-          <button
-            class="px-4 py-2 font-medium text-sm transition-colors duration-150
-                   {selectedTab === tab 
-                     ? 'text-gray-700 border-b-2 border-gray-500 bg-white' 
-                     : 'text-gray-600 hover:text-gray-700 hover:bg-gray-50'}"
-            on:click={() => handleFilterChange(tab, timeFilters[tab][0].value)}
-          >
-            {tab}
-          </button>
+        {#each FILTER_TABS as tab}
+            <button
+                class="px-4 py-2 text-sm font-medium transition-colors duration-150"
+                class:text-gray-700={selectedTab === tab}
+                class:text-gray-500={selectedTab !== tab}
+                class:border-b-2={selectedTab === tab}
+                class:border-gray-500={selectedTab === tab}
+                class:bg-white={selectedTab === tab}
+                class:hover:text-gray-700={selectedTab !== tab}
+                class:hover:bg-gray-50={selectedTab !== tab}
+                on:click={() => selectFilter(tab, dateFilters[tab][0].key)}
+            >
+                {tab}
+            </button>
         {/each}
     </div>
   
+    <!-- Rangos de fecha -->
     <div class="flex flex-wrap gap-2 py-3 px-2 bg-gray-50 rounded-b-lg">
-        {#each timeFilters[selectedTab] as {text, value}}
-          <button
-            class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-150
-                   {selectedFilter === value 
-                     ? 'bg-gray-200 text-gray-700 border border-gray-200' 
-                     : 'bg-white text-gray-700 border border-gray-200 hover:bg-gray-100'}"
-            on:click={() => handleFilterChange(selectedTab, value)}
-          >
-            {text}
-          </button>
+        {#each dateFilters[selectedTab] as {label, key}}
+            <button
+                class="px-3 py-1.5 text-sm font-medium rounded-md transition-colors duration-150 border border-gray-200 cursor-pointer"
+                class:bg-slate-200={selectedRange === key}
+                class:bg-white={selectedRange !== key}
+                class:text-black={selectedRange === key}
+                class:text-gray-700={selectedRange !== key}
+                class:hover:bg-gray-100={selectedRange !== key}
+                on:click={() => selectFilter(selectedTab, key)}
+            >
+                {label}
+            </button>
         {/each}
     </div>
 </div>
