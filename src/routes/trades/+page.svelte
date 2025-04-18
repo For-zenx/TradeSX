@@ -14,7 +14,7 @@
             const response = await fetch('/api/trades');
             if (!response.ok) throw new Error('Network response was not ok');
             let data = await response.json();
-            trades = data.data
+            trades = data.data.reverse();
         } catch (err: unknown) {
             console.error('Error fetching trades:', err);
             if (err instanceof Error) {
@@ -38,24 +38,25 @@
             <span class="block sm:inline"> {error}</span>
         </div>
     {:else}
+        <div class="flex justify-end text-sm text-gray-600 pb-1 px-4">Total trades: {trades.length}</div>
         <div class="overflow-x-auto">
             <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead class="bg-gray-50">
-                    <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Símbolo</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dirección</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Cierre</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Entrada</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Precio Cierre</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cantidad</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volumen</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Neto</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Saldo</th>
+                    <tr class="*:px-6 *:py-3 *:text-left *:text-xs *:font-medium *:text-gray-500 *:uppercase *:tracking-wider">
+                        <th>Símbolo</th>
+                        <th>Dirección</th>
+                        <th>Fecha de Cierre</th>
+                        <th>Precio Entrada</th>
+                        <th>Precio Cierre</th>
+                        <th>Cantidad</th>
+                        <th>Volumen</th>
+                        <th>Neto</th>
+                        <th>Saldo</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
                     {#each trades as trade}
-                        <tr class="hover:bg-gray-50">
+                        <tr>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{trade.simbolo}</td>
                             <td class={`px-6 py-4 whitespace-nowrap text-sm ${trade.direccion === 'Comprar' ? 'text-green-600' : 'text-red-600'}`}>
                                 {trade.direccion}

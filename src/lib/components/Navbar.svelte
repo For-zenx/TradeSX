@@ -11,7 +11,7 @@
 	}
 </script>
 
-<nav class="flex w-full justify-between p-2 absolute sticky top-0 bg-white z-50 border-b border-gray-300">
+<nav class="flex w-full justify-between p-2 absolute sticky top-0 bg-white z-50 bg-white bg-opacity-0">
 	<div class="text-gray-600 font-bold">
 		{formatTitle(page.url.pathname.split('/')[1])}
 	</div>
