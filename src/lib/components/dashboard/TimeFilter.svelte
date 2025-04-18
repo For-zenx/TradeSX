@@ -1,5 +1,6 @@
 <script lang="ts">
     import { nyTime } from '$lib/stores/timeStore';
+    import { onMount } from 'svelte';
     import { onDestroy } from 'svelte';
 
     // 1. Tipos y constantes
@@ -16,7 +17,7 @@
     // 2. Estado del componente
     let currentDate: Date = new Date();
     let selectedTab: FilterTab = 'Histórico';
-    let selectedRange = 'all';
+    let selectedRange = '3m';
 
     // 3. Configuración de suscripción
     const unsubscribe = nyTime.subscribe(({ dateString }) => {
@@ -55,10 +56,18 @@
         ]
     };
 
-    // 6. Manejo de eventos
+    onMount(() => {
+        const initialFilter = dateFilters[selectedTab].find(f => f.key === selectedRange);
+        onSelect?.(initialFilter!);
+    });
+    
+    export let onSelect: (range: { start: string; end: string; key: string }) => void;
+
     const selectFilter = (tab: FilterTab, rangeKey: string) => {
         selectedTab = tab;
         selectedRange = rangeKey;
+        const selected = dateFilters[tab].find(f => f.key === rangeKey);
+        onSelect?.(selected!); // El ! es porque sabemos que siempre existirá
     };
 </script>
 
