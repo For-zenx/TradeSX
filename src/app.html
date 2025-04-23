@@ -11,7 +11,6 @@
 	</body>
 </html>
 <style>
-	/* TOOLTIP */
 	[data-tooltip] {
 		position: relative;
 	}
@@ -20,42 +19,46 @@
 	[data-tooltip]:after {
 		position: absolute;
 		left: 50%;
-		transform: translate(-50%);
+		transform: translate(-50%, 5px);
 		-webkit-font-smoothing: antialiased;
 		margin: 0 auto;
 		opacity: 0;
 		visibility: hidden;
-		z-index: 9;
-		transition: 0.1s ease-in-out 0.1s;
+		z-index: 9999;
+		transition: all 0.2s ease;
+		pointer-events: none;
 	}
 
 	[data-tooltip]:before {
-		content: "";
+		content: '';
 		height: 0;
 		width: 0;
-		bottom: calc(100% - 10px); 
-		border-style: solid;
-		border-width: 10px;
-		border-color: #333 transparent transparent transparent;
+		bottom: 100%;
+		border: 6px solid transparent;
+		border-top-color: rgba(0, 0, 0, 0.1);
+		filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.05));
 	}
 
 	[data-tooltip]:after {
 		content: attr(data-tooltip);
 		white-space: nowrap;
-		background: #333;
-		padding: 0.5rem 1rem;
-		font-size: 0.9rem;
-		box-sizing: border-box;
-		bottom: calc(100% + 5px);
-		color: #fff;
-		border-radius: 8px;
-		text-shadow: 0px 1px 1px #000;
+		background: white;
+		padding: 8px 12px;
+		font-size: 0.85rem;
+		bottom: calc(100% + 6px);
+		color: #333;
+		border-radius: 6px;
+		box-shadow:
+			0 2px 8px rgba(0, 0, 0, 0.1),
+			0 1px 2px rgba(0, 0, 0, 0.08);
+		font-weight: 500;
+		backdrop-filter: blur(2px);
 	}
 
 	[data-tooltip]:hover:before,
 	[data-tooltip]:hover:after {
 		opacity: 1;
 		visibility: visible;
-		transition: 0.11s ease-in-out 0.1s;
+		transform: translate(-50%, 0);
 	}
 </style>

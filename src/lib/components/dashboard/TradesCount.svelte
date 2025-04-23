@@ -75,7 +75,7 @@
         
         <div class="h-4 w-px bg-gray-200"></div>
         
-        <div data-tooltip="{winRateValue >= 50 ? 'es mayor a 50%' : 'Debe ser mayor a 50%'}" class="flex items-center gap-1 px-2 py-1 rounded {winRateValue >= 50 ? 'bg-green-50' : 'bg-red-50'}">
+        <div data-tooltip="{winRateValue >= 50 ? 'Es mayor a 50%' : 'Debe ser mayor a 50%'}" class="flex items-center gap-1 px-2 py-1 rounded {winRateValue >= 50 ? 'bg-green-50' : 'bg-red-50'}">
             <span class="text-sm font-medium text-gray-700">WR:</span>
             <span class="text-sm font-semibold {winRateValue >= 50 ? 'text-green-700' : 'text-red-700'}">
                 {winRateDisplay}
