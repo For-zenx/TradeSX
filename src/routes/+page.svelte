@@ -5,6 +5,7 @@
 <script lang="ts">
     import TimeFilter from '$lib/components/dashboard/TimeFilter.svelte';
     import TradesCount from '$lib/components/dashboard/TradesCount.svelte';
+    import CapitalChart from '$lib/components/dashboard/CapitalChart.svelte';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
     
@@ -74,4 +75,7 @@
     <div class="p-4 text-center text-gray-500">No hay trades en el rango seleccionado</div>
 {:else}
     <TradesCount trades={filteredTrades} />
+    <div class="grid grid-cols-3">
+        <CapitalChart/>
+    </div>
 {/if}
