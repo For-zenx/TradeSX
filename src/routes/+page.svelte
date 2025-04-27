@@ -5,8 +5,8 @@
 <script lang="ts">
     import TimeFilter from '$lib/components/dashboard/TimeFilter.svelte';
     import TradesCount from '$lib/components/dashboard/TradesCount.svelte';
-    import {onMount} from 'svelte';
     import type { FormattedTrade } from '$lib/interfaces/trades';
+    import {onMount} from 'svelte';
     
     let allTrades: FormattedTrade[] = [];
     let filteredTrades = $state<FormattedTrade[]>([]);

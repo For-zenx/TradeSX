@@ -75,10 +75,10 @@
 			data-tooltip="Trades por día: {tradesPerDay === 0
 				? 'Sin trades registrados'
 				: tradesPerDay <= 3
-					? 'Rango óptimo (1-3)'
+					? 'rango óptimo (1-3)'
 					: tradesPerDay <= 5
-						? 'Rango aceptable (4-5)'
-						: 'Posible overtrading (6+)'}"
+						? 'rango aceptable (4-5)'
+						: 'overtrading (6+)'}"
 			class="flex items-center gap-1 rounded px-2 py-1 {tradesPerDay === 0
 				? ''
 				: tradesPerDay <= 3
@@ -130,9 +130,9 @@
 
 		<div
 			data-tooltip="Win rate: {winRateValue >= 50
-				? 'Rango optimo'
+				? 'rango optimo'
 				: winRateValue >= 60
-					? 'Rango excelente'
+					? 'rango excelente'
 					: 'menor al 50%'}"
 			class="flex items-center gap-1 rounded px-2 py-1 {winRateValue >= 50
 				? 'bg-blue-50'
