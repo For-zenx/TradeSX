@@ -17,7 +17,7 @@
   }
 
   function renderChart() {
-      const ctx = document.getElementById('ctraderChart') as HTMLCanvasElement | null;
+      const ctx = document.getElementById('capitalChart') as HTMLCanvasElement | null;
       if (!ctx) return;
 
       const processedData = processTrades(trades);
@@ -148,7 +148,7 @@
 
 <div class="bg-gray-200 rounded-sm h-auto max-h-96">
   <p class="text-sm px-1 pt-2 select-none">Capital</p>
-  <div class="bg-white m-2">
-      <canvas id="ctraderChart" class="w-full h-80"></canvas>
+  <div class="bg-white m-1">
+      <canvas id="capitalChart" class="w-full h-80"></canvas>
   </div>
 </div>

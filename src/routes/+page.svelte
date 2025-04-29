@@ -8,6 +8,7 @@
     import CapitalChart from '$lib/components/dashboard/CapitalChart.svelte';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
+	import GeneralResume from '$lib/components/dashboard/GeneralResume.svelte';
     
     let allTrades: FormattedTrade[] = [];
     let filteredTrades = $state<FormattedTrade[]>([]);
@@ -74,7 +75,8 @@
     <div class="p-4 text-center text-gray-500">No hay trades en el rango seleccionado</div>
 {:else}
     <TradesCount trades={filteredTrades} />
-    <div class="grid grid-cols-3">
+    <div class="grid grid-cols-3 gap-2">
         <CapitalChart trades={filteredTrades}/>
+        <GeneralResume />
     </div>
 {/if}
