@@ -60,7 +60,6 @@
 </script>
 
 <TimeFilter onSelect={updateData} />
-
 {#if isLoading}
     <div class="text-center py-8">
         <div class="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
@@ -76,6 +75,6 @@
 {:else}
     <TradesCount trades={filteredTrades} />
     <div class="grid grid-cols-3">
-        <CapitalChart/>
+        <CapitalChart trades={filteredTrades}/>
     </div>
 {/if}

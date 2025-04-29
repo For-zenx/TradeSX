@@ -6,11 +6,13 @@
 	let { children } = $props();
   </script>
   
+
+  
   <div class="flex min-h-screen">
 	<Sidebar />
 	<div class="flex-1 flex flex-col">
 		<Navbar />
-	  <main class="flex-1 overflow-y-auto p-2">
+	  <main class="flex-1 overflow-x-hidden overflow-y-auto p-2">
 		{@render children()}
 	  </main>
 	</div>

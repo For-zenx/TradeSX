@@ -88,7 +88,7 @@
 						: 'bg-red-50'}"
 		>
 			<span class="text-sm font-medium text-gray-700"
-				>T/D: <span
+				>T/Day: <span
 					class="text-sm font-semibold {tradesPerDay === 0
 						? 'text-gray-600'
 						: tradesPerDay <= 3
