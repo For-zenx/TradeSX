@@ -54,7 +54,7 @@
 <div class="flex w-full items-center justify-between bg-white px-4 py-3">
 	<div>
 		<div class="font-mono text-gray-600">
-			Desde: {trades.length > 0 ? trades[0].fecha_cierre.split(' ')[0] : 'N/A'}, Hasta: {trades.length >
+			Rango del resumen: {trades.length > 0 ? trades[0].fecha_cierre.split(' ')[0] : 'N/A'} - {trades.length >
 			0
 				? trades[trades.length - 1].fecha_cierre.split(' ')[0]
 				: 'N/A'}
@@ -88,7 +88,7 @@
 						: 'bg-red-50'}"
 		>
 			<span class="text-sm font-medium text-gray-700"
-				>Treades per Day: <span
+				>Trades por día: <span
 					class="text-sm font-semibold {tradesPerDay === 0
 						? 'text-gray-600'
 						: tradesPerDay <= 3

@@ -154,7 +154,7 @@
                 <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{metrics.shortRiskReward.toFixed(2)}</td>
               </tr>
               <tr>
-                  <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Expectativa</td>
+                  <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Expectativa $</td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{metrics.expectation.toFixed(2)}</td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{metrics.longExpectation.toFixed(2)}</td>
                   <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{metrics.shortExpectation.toFixed(2)}</td>

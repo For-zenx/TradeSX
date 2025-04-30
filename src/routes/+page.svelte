@@ -6,9 +6,10 @@
     import TimeFilter from '$lib/components/dashboard/TimeFilter.svelte';
     import TradesCount from '$lib/components/dashboard/TradesCount.svelte';
     import CapitalChart from '$lib/components/dashboard/CapitalChart.svelte';
+	import GeneralResume from '$lib/components/dashboard/GeneralResume.svelte';
+	import DrowdownIndex from '$lib/components/dashboard/DrowdownIndex.svelte';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
-	import GeneralResume from '$lib/components/dashboard/GeneralResume.svelte';
     
     let allTrades: FormattedTrade[] = [];
     let filteredTrades = $state<FormattedTrade[]>([]);
@@ -78,5 +79,6 @@
     <div class="grid grid-cols-3 gap-2">
         <CapitalChart trades={filteredTrades}/>
         <GeneralResume trades={filteredTrades}/>
+        <DrowdownIndex trades={filteredTrades}/>
     </div>
 {/if}
