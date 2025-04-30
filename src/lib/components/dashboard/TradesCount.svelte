@@ -37,7 +37,7 @@
 		losses = stats.losses;
 		total = stats.total;
 		balance = stats.balance;
-		winRateValue = wins + losses > 0 ? (wins / (wins + losses)) * 100 : 0;
+		winRateValue = wins + losses > 0 ? (wins / trades.length) * 100 : 0;
 		tradesPerDay = stats.tradesPerDay;
 	}
 
@@ -88,14 +88,14 @@
 						: 'bg-red-50'}"
 		>
 			<span class="text-sm font-medium text-gray-700"
-				>T/Day: <span
+				>Treades per Day: <span
 					class="text-sm font-semibold {tradesPerDay === 0
 						? 'text-gray-600'
 						: tradesPerDay <= 3
-							? 'text-blue-50'
+							? 'text-green-600'
 							: tradesPerDay <= 5
-								? 'text-yellow-600'
-								: 'text-red-500'} text-right"
+								? 'text-blue-600'
+								: 'text-red-600'} text-right"
 				>
 					{tradesPerDay}
 				</span></span

@@ -23,7 +23,7 @@
             const response = await fetch('/api/trades');
             if (!response.ok) throw new Error('Error en la respuesta');
             const data = await response.json();
-            allTrades = data.data || []; 
+            allTrades = data.data || [];
             if (currentRange) filterTrades(currentRange);
         } catch (err) {
             error = 'Error al cargar los trades';
@@ -77,6 +77,6 @@
     <TradesCount trades={filteredTrades} />
     <div class="grid grid-cols-3 gap-2">
         <CapitalChart trades={filteredTrades}/>
-        <GeneralResume />
+        <GeneralResume trades={filteredTrades}/>
     </div>
 {/if}
