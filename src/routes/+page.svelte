@@ -24,6 +24,7 @@
             const response = await fetch('/api/trades');
             if (!response.ok) throw new Error('Error en la respuesta');
             const data = await response.json();
+            console.log(data);
             allTrades = data.data || [];
             if (currentRange) filterTrades(currentRange);
         } catch (err) {

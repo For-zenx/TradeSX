@@ -54,7 +54,7 @@
 <div class="flex w-full items-center justify-between bg-white px-4 py-3">
 	<div>
 		<div class="font-mono text-gray-600">
-			Rango del resumen: {trades.length > 0 ? trades[0].fecha_cierre.split(' ')[0] : 'N/A'} - {trades.length >
+			Desde: {trades.length > 0 ? trades[0].fecha_cierre.split(' ')[0] : 'N/A'}, Hasta: {trades.length >
 			0
 				? trades[trades.length - 1].fecha_cierre.split(' ')[0]
 				: 'N/A'}

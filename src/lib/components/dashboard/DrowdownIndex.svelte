@@ -16,8 +16,14 @@
         const dailyData: Record<string, DayStats> = {};
         let currentPeak = 0;
         let currentTrough = 0;
+        let previousSaldo = trades[0]?.saldo || 0; // Inicializar con el primer saldo
 
-        trades.forEach(trade => {
+        // Ordenar trades por fecha (por si acaso)
+        const sortedTrades = [...trades].sort((a, b) => 
+            new Date(a.fecha_cierre).getTime() - new Date(b.fecha_cierre).getTime()
+        );
+
+        sortedTrades.forEach((trade, index) => {
             const [day, month, year] = trade.fecha_cierre.split(' ')[0].split('/');
             const dateKey = `${year}-${month}-${day}`;
             
@@ -27,18 +33,27 @@
                 currentTrough = trade.saldo;
             }
 
-            if (trade.saldo > currentPeak) {
-                currentPeak = trade.saldo;
-                currentTrough = trade.saldo;
-            }
+            // Detectar anomalías (retiros/depósitos)
+            const expectedSaldoChange = trade.neto;
+            const actualSaldoChange = trade.saldo - previousSaldo;
+            const isAnomaly = Math.abs(actualSaldoChange - expectedSaldoChange) > 0.01; // Margen de error
 
-            if (trade.saldo < currentTrough) {
-                currentTrough = trade.saldo;
-                const drawdown = (currentPeak - currentTrough) / currentPeak * 100;
-                if (drawdown > dailyData[dateKey].maxDrawdown) {
-                    dailyData[dateKey].maxDrawdown = drawdown;
+            if (!isAnomaly) {
+                if (trade.saldo > currentPeak) {
+                    currentPeak = trade.saldo;
+                    currentTrough = trade.saldo;
+                }
+
+                if (trade.saldo < currentTrough) {
+                    currentTrough = trade.saldo;
+                    const drawdown = (currentPeak - currentTrough) / currentPeak * 100;
+                    if (drawdown > dailyData[dateKey].maxDrawdown) {
+                        dailyData[dateKey].maxDrawdown = drawdown;
+                    }
                 }
             }
+
+            previousSaldo = trade.saldo; // Actualizar para el próximo trade
         });
 
         const days = Object.values(dailyData);
@@ -78,30 +93,30 @@
                     <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posibilidad diaria</th>
                 </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
+            <tbody class="bg-white divide-y divide-gray-400">
                 <tr>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 5%</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{stats.probabilities.over5.toFixed(0)}%</td>
+                    <td data-tooltip="{stats.probabilities.over5 >= 15 ? '≥ 15% rango peligroso' : stats.probabilities.over5 >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over5 >= 15 ? 'bg-red-100' : stats.probabilities.over5 >= 10 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over5.toFixed(0)}%</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 10%</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{stats.probabilities.over10.toFixed(0)}%</td>
+                    <td data-tooltip="{stats.probabilities.over10 >= 5 ? 'Reducir al 5%' : stats.probabilities.over10 >= 3 ? 'Rango optimo, reducir al 3%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over10 >= 5 ? 'bg-red-100' : stats.probabilities.over10 >= 3 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over10.toFixed(0)}%</td>
                 </tr>
                 <tr>
                     <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 15%</td>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">{stats.probabilities.over15.toFixed(0)}%</td>
+                    <td data-tooltip="{stats.probabilities.over15 >= 1 ? 'Reducir al 1%' : stats.probabilities.over15 >= 0.5 ? 'Rango optimo, reducir al 0.5%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over15 >= 1 ? 'bg-red-100' : stats.probabilities.over15 >= 0.5 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over15.toFixed(0)}%</td>
                 </tr>      
             </tbody>
         </table>
         
-        <!-- Sección mejorada para estadísticas clave -->
         <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
-            <div class="bg-gray-50 p-2 rounded border border-gray-400">
+            <div data-tooltip="{stats.maxDrawdown.value >= 15 ? '≥ 15% rango peligroso' : stats.maxDrawdown.value >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" 
+                class="p-2 rounded border border-gray-400 {stats.maxDrawdown.value >= 15 ? 'bg-red-100' : stats.maxDrawdown.value >= 10 ? 'bg-blue-100' : 'bg-green-100'}">
                 <div class="font-medium text-gray-700">Máximo histórico</div>
                 <div class="text-lg font-semibold">
                     {stats.maxDrawdown.value.toFixed(1)}%
                 </div>
-                <div class="text-xs text-gray-600">
+                <div class="text-xs text-gray-700">
                     {stats.maxDrawdown.date}
                 </div>
             </div>
@@ -110,33 +125,10 @@
                 <div class="text-lg font-semibold">
                     {stats.currentStreak} días
                 </div>
-                <div class="text-xs text-gray-600">
+                <div class="text-xs text-gray-700">
                     sin drawdown ≥5%
                 </div>
             </div>
         </div>
     </div>
 </div>
-<!-- <div class="bg-gray-100 rounded border p-3 space-y-3">
-    <h3 class="font-medium">Índice de Drawdown Intraday</h3>
-    
-    <div class="grid grid-cols-3 gap-2 text-center">
-        <div class="border rounded p-2">
-            <div class="font-bold">≥5%</div>
-            <div>{stats.probabilities.over5.toFixed(0)}%</div>
-        </div>
-        <div class="border rounded p-2">
-            <div class="font-bold">≥10%</div>
-            <div>{stats.probabilities.over10.toFixed(0)}%</div>
-        </div>
-        <div class="border rounded p-2">
-            <div class="font-bold">≥15%</div>
-            <div>{stats.probabilities.over15.toFixed(0)}%</div>
-        </div>
-    </div>
-
-    <div class="text-sm space-y-1">
-        <div>Máximo histórico: {stats.maxDrawdown.value.toFixed(1)}% ({stats.maxDrawdown.date})</div>
-        <div>Racha actual: {stats.currentStreak} días sin >5%</div>
-    </div>
-</div> -->
