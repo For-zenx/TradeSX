@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { updateIAResume } from '$lib/stores/iaResume';
 	import type { FormattedTrade } from '$lib/interfaces/trades';
 
 	export let trades: FormattedTrade[] = [];
@@ -39,6 +40,8 @@
 		balance = stats.balance;
 		winRateValue = wins + losses > 0 ? (wins / trades.length) * 100 : 0;
 		tradesPerDay = stats.tradesPerDay;
+
+		generateIAResume();
 	}
 
 	$: formattedBalance = balance.toLocaleString('en-US', {
@@ -49,6 +52,40 @@
 	});
 
 	$: winRateDisplay = winRateValue.toFixed(1) + '%';
+
+	function generateIAResume() {
+		if (trades.length === 0) {
+			updateIAResume('tradesCount', 'No hay datos de trades disponibles');
+			return;
+		}
+		const tradingDays = new Set(trades.map(trade => trade.fecha_cierre.split(' ')[0])).size;
+		
+		const firstDate = new Date(trades[0].fecha_cierre.split(' ')[0].split('/').reverse().join('-'));
+		const lastDate = new Date(trades[trades.length - 1].fecha_cierre.split(' ')[0].split('/').reverse().join('-'));
+		const totalDays = Math.ceil((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+		
+		const initialBalance = trades[0].saldo - trades[0].neto; // Saldo antes del primer trade
+		const finalBalance = trades[trades.length - 1].saldo;
+		
+		const resume = `
+			RESUMEN DE ESTADISTICAS DE TRADES:
+			- Rango de fechas: ${trades[0].fecha_cierre.split(' ')[0]} to ${trades[trades.length - 1].fecha_cierre.split(' ')[0]}
+			- Días en total: ${totalDays}
+			- Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo)
+			- Balance inicial: $${initialBalance.toFixed(2)}
+			- Balance final: $${finalBalance.toFixed(2)}
+			- Cambio de balance: $${(finalBalance - initialBalance).toFixed(2)} (${((finalBalance - initialBalance) / initialBalance * 100).toFixed(2)}%)
+
+			TRADE PERFORMANCE:
+			- Total trades: ${total}
+			- Trades ganadores: ${wins}
+			- Treades perdedores: ${losses}
+			- Trades por día: ${tradesPerDay} (average)
+			- Win rate: ${winRateValue.toFixed(1)} %}
+		`;
+
+		updateIAResume('tradesCount', resume);
+	}
 </script>
 
 <div class="flex w-full items-center justify-between bg-white px-4 py-3">

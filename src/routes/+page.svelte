@@ -8,6 +8,7 @@
     import CapitalChart from '$lib/components/dashboard/CapitalChart.svelte';
 	import GeneralResume from '$lib/components/dashboard/GeneralResume.svelte';
 	import DrowdownIndex from '$lib/components/dashboard/DrowdownIndex.svelte';
+    import { iaResumeStore, getFullResume } from '$lib/stores/iaResume';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
     
@@ -57,6 +58,11 @@
         filterTrades(range);
     }
 
+    function copyIAResume() {
+        const fullResume = getFullResume();
+        navigator.clipboard.writeText(fullResume)
+    }
+
     onMount(() => {
         loadAllTrades();
     });
@@ -81,5 +87,10 @@
         <CapitalChart trades={filteredTrades}/>
         <GeneralResume trades={filteredTrades}/>
         <DrowdownIndex trades={filteredTrades}/>
+    </div>
+    <div class="flex justify-end mt-4">
+        <button class="text-blue-700 hover:text-blue-900 font-medium py-2 px-4 rounded transition-colors" onclick={copyIAResume}>
+            Copy IA resume
+        </button>
     </div>
 {/if}
