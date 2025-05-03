@@ -18,11 +18,13 @@ export function processTradeRow(row: unknown): FormattedTrade {
     return {
         simbolo: trade['Símbolo'] || '',
         direccion: trade['Dirección de apertura'] || '',
+        fecha_apertura: trade['Hora de apertura'] || '',
         fecha_cierre: trade['Hora de cierre'] || '',
         precio_entrada: convertExcelValue(trade['Precio de entrada']),
         precio_cierre: convertExcelValue(trade['Precio de cierre']),
         cantidad: convertExcelValue(trade['Cantidad de Cierre']),
         volumen: convertExcelValue(trade['Volumen de Cierre']),
+        comision: convertExcelValue(trade['Comisión']),
         neto: convertExcelValue(trade['$ neto']),
         saldo: convertExcelValue(trade['Saldo $'])
     };

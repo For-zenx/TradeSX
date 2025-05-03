@@ -69,7 +69,7 @@
 		
 		const resume = `
 			RESUMEN DE ESTADISTICAS DE TRADES:
-			- Rango de fechas: ${trades[0].fecha_cierre.split(' ')[0]} to ${trades[trades.length - 1].fecha_cierre.split(' ')[0]}
+			- Rango de fechas: ${trades[0].fecha_cierre.split(' ')[0]} hasta ${trades[trades.length - 1].fecha_cierre.split(' ')[0]}
 			- Días en total: ${totalDays}
 			- Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo)
 			- Balance inicial: $${initialBalance.toFixed(2)}
@@ -112,7 +112,7 @@
 			data-tooltip="Trades por día: {tradesPerDay === 0
 				? 'Sin trades registrados'
 				: tradesPerDay <= 3
-					? 'rango óptimo (1-3)'
+					? 'disciplinado (1-3)'
 					: tradesPerDay <= 5
 						? 'rango aceptable (4-5)'
 						: 'overtrading (6+)'}"
