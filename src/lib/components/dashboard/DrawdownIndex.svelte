@@ -1,5 +1,6 @@
 <script lang="ts">
     import type { FormattedTrade } from '$lib/interfaces/trades';
+    import { updateIAResume } from '$lib/stores/iaResume';
 
     export let trades: FormattedTrade[] = [];
 
@@ -11,6 +12,8 @@
     $: stats = {
         ...calculateDrawdownStats(trades),
     };
+
+    $: generateIAResume();
 
     function calculateDrawdownStats(trades: FormattedTrade[]) {
         const dailyData: Record<string, DayStats> = {};
@@ -80,6 +83,30 @@
             else break;
         }
         return streak;
+    };
+
+    function generateIAResume() {
+        if (trades.length === 0) {
+            updateIAResume('drawdown', 'No hay datos de trades disponibles para calcular drawdown');
+            return;
+        }
+        
+        const resume = `
+ANÁLISIS DE DRAWDOWN:
+
+PROBABILIDADES DIARIAS (es decir, que en un día cualquiera el drawdown sea mayor a):
+- Probabilidad de drawdown ≥5%: ${stats.probabilities.over5.toFixed(1)}%
+- Probabilidad de drawdown ≥10%: ${stats.probabilities.over10.toFixed(1)}%
+- Probabilidad de drawdown ≥15%: ${stats.probabilities.over15.toFixed(1)}%
+
+MÁXIMOS HISTÓRICOS:
+- Mayor drawdown registrado: ${stats.maxDrawdown.value.toFixed(1)}%
+  - Fecha: ${stats.maxDrawdown.date || 'N/A'}
+
+RACHA ACTUAL:
+- Días consecutivos sin drawdown ≥5%: ${stats.currentStreak}`;
+
+        updateIAResume('drawdown', resume);
     }
 </script>
 

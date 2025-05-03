@@ -3,7 +3,7 @@ import { writable } from 'svelte/store';
 interface IAResume {
     tradesCount?: string;
     generalResume?: string;
-    drowdownIndex?: string;
+    drawdown?: string;
 }
 
 export const iaResumeStore = writable<IAResume>({});
