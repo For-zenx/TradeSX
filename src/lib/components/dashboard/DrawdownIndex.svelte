@@ -110,49 +110,51 @@ RACHA ACTUAL:
     }
 </script>
 
-<div class="bg-gray-200 rounded-sm h-auto max-h-96">
+<div class="bg-gray-200 rounded-sm h-auto max-h-96 flex flex-col">
     <p class="text-sm px-1 pt-2">Índice de Drawdown</p>
-    <div class="bg-white m-1 p-2 overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-            <thead>
-                <tr>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drawdown</th>
-                    <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posibilidad diaria</th>
-                </tr>
-            </thead>
-            <tbody class="bg-white divide-y divide-gray-400">
-                <tr>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 5%</td>
-                    <td data-tooltip="{stats.probabilities.over5 >= 15 ? '≥ 15% rango peligroso' : stats.probabilities.over5 >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over5 >= 15 ? 'bg-red-100' : stats.probabilities.over5 >= 10 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over5.toFixed(0)}%</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 10%</td>
-                    <td data-tooltip="{stats.probabilities.over10 >= 5 ? 'Reducir al 5%' : stats.probabilities.over10 >= 3 ? 'Rango optimo, reducir al 3%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over10 >= 5 ? 'bg-red-100' : stats.probabilities.over10 >= 3 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over10.toFixed(0)}%</td>
-                </tr>
-                <tr>
-                    <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 15%</td>
-                    <td data-tooltip="{stats.probabilities.over15 >= 1 ? 'Reducir al 1%' : stats.probabilities.over15 >= 0.5 ? 'Rango optimo, reducir al 0.5%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over15 >= 1 ? 'bg-red-100' : stats.probabilities.over15 >= 0.5 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over15.toFixed(0)}%</td>
-                </tr>      
-            </tbody>
-        </table>
+    <div class="bg-white m-1 p-2 overflow-x-auto flex-1 flex flex-col">
+        <div class="flex-none">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drawdown</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posibilidad diaria</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-400">
+                    <tr>
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 5%</td>
+                        <td data-tooltip="{stats.probabilities.over5 >= 15 ? '≥ 15% rango peligroso' : stats.probabilities.over5 >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over5 >= 15 ? 'bg-red-100' : stats.probabilities.over5 >= 10 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over5.toFixed(0)}%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 10%</td>
+                        <td data-tooltip="{stats.probabilities.over10 >= 5 ? 'Reducir al 5%' : stats.probabilities.over10 >= 3 ? 'Rango optimo, reducir al 3%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over10 >= 5 ? 'bg-red-100' : stats.probabilities.over10 >= 3 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over10.toFixed(0)}%</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 15%</td>
+                        <td data-tooltip="{stats.probabilities.over15 >= 1 ? 'Reducir al 1%' : stats.probabilities.over15 >= 0.5 ? 'Rango optimo, reducir al 0.5%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over15 >= 1 ? 'bg-red-100' : stats.probabilities.over15 >= 0.5 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over15.toFixed(0)}%</td>
+                    </tr>      
+                </tbody>
+            </table>
+        </div>
         
-        <div class="mt-3 grid grid-cols-2 gap-2 text-sm">
+        <div class="mt-3 grid grid-cols-2 gap-2 text-sm flex-1 min-h-0"> <!-- Contenedor flexible -->
             <div data-tooltip="{stats.maxDrawdown.value >= 15 ? '≥ 15% rango peligroso' : stats.maxDrawdown.value >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" 
-                class="p-2 rounded border border-gray-400 {stats.maxDrawdown.value >= 15 ? 'bg-red-100' : stats.maxDrawdown.value >= 10 ? 'bg-blue-100' : 'bg-green-100'}">
+                class="p-2 rounded border border-gray-400 {stats.maxDrawdown.value >= 15 ? 'bg-red-100' : stats.maxDrawdown.value >= 10 ? 'bg-blue-100' : 'bg-green-100'} h-full flex flex-col">
                 <div class="font-medium text-gray-700">Máximo histórico</div>
-                <div class="text-lg font-semibold">
+                <div class="text-lg font-semibold flex-1 flex items-center justify-center">
                     {stats.maxDrawdown.value.toFixed(1)}%
                 </div>
-                <div class="text-xs text-gray-700">
+                <div class="text-xs text-gray-700 text-center">
                     {stats.maxDrawdown.date}
                 </div>
             </div>
-            <div class="bg-gray-50 p-2 rounded border border-gray-400">
+            <div class="bg-gray-50 p-2 rounded border border-gray-400 h-full flex flex-col">
                 <div class="font-medium text-gray-700">Racha actual</div>
-                <div class="text-lg font-semibold">
+                <div class="text-lg font-semibold flex-1 flex items-center justify-center">
                     {stats.currentStreak} días
                 </div>
-                <div class="text-xs text-gray-700">
+                <div class="text-xs text-gray-700 text-center">
                     sin drawdown ≥5%
                 </div>
             </div>

@@ -4,6 +4,7 @@ interface IAResume {
     tradesCount?: string;
     generalResume?: string;
     drawdown?: string;
+    weekdayPerformance?: string;
 }
 
 export const iaResumeStore = writable<IAResume>({});

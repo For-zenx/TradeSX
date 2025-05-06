@@ -158,8 +158,6 @@
         }
 
         const resume = `
-RESUMEN DE DESEMPEÑO DE TRADING:
-
 ESTADÍSTICAS GENERALES:
 - Operaciones totales: ${metrics.totalTrades}
   - Operaciones largas: ${metrics.longTrades} (${(metrics.longTrades/metrics.totalTrades*100).toFixed(1)}%)

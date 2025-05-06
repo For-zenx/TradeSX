@@ -75,6 +75,7 @@ RESUMEN RÁPIDO:
 - Balance inicial: $${initialBalance.toFixed(2)}
 - Balance final: $${finalBalance.toFixed(2)}
 - Cambio de balance: $${(finalBalance - initialBalance).toFixed(2)} (${((finalBalance - initialBalance) / initialBalance * 100).toFixed(2)}%)
+- Trades por día (average): ${tradesPerDay}
 `;
 
 		updateIAResume('tradesCount', resume);
