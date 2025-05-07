@@ -23,9 +23,9 @@
 				riskRewardRatio: 0,
 				longRiskReward: 0,
 				shortRiskReward: 0,
-				expectation: 0,
-				longExpectation: 0,
-				shortExpectation: 0,
+				firstTradeWinRate: 0,
+				longFirstTradeWinRate: 0,
+				shortFirstTradeWinRate: 0,
 				maxWin: 0,
 				maxLoss: 0,
 				totalTrades: 0,
@@ -62,6 +62,56 @@
 				return sum + (close.getTime() - open.getTime()) / (1000 * 60);
 			}, 0);
 			return totalMinutes / tradeList.length;
+		};
+
+		const calculateFirstTradeWinRate = () => {
+			const tradesByDay: {[key: string]: FormattedTrade[]} = {};
+			
+			trades.forEach(trade => {
+				const date = trade.fecha_apertura.split(' ')[0];
+				if (!tradesByDay[date]) {
+					tradesByDay[date] = [];
+				}
+				tradesByDay[date].push(trade);
+			});
+
+			let firstTrades: FormattedTrade[] = [];
+			let longFirstTrades: FormattedTrade[] = [];
+			let shortFirstTrades: FormattedTrade[] = [];
+			
+			Object.values(tradesByDay).forEach(dayTrades => {
+				if (dayTrades.length > 0) {
+					dayTrades.sort((a, b) => {
+						const timeA = parseDate(a.fecha_apertura).getTime();
+						const timeB = parseDate(b.fecha_apertura).getTime();
+						return timeA - timeB;
+					});
+					
+					const firstTrade = dayTrades[0];
+					firstTrades.push(firstTrade);
+					
+					if (firstTrade.direccion === 'Comprar') {
+						longFirstTrades.push(firstTrade);
+					} else {
+						shortFirstTrades.push(firstTrade);
+					}
+				}
+			});
+
+			const winningFirstTrades = firstTrades.filter(t => t.neto > 0);
+			const firstTradeWinRate = firstTrades.length > 0 ? (winningFirstTrades.length / firstTrades.length) * 100 : 0;
+			
+			const longWinningFirst = longFirstTrades.filter(t => t.neto > 0);
+			const longFirstTradeWinRate = longFirstTrades.length > 0 ? (longWinningFirst.length / longFirstTrades.length) * 100 : 0;
+			
+			const shortWinningFirst = shortFirstTrades.filter(t => t.neto > 0);
+			const shortFirstTradeWinRate = shortFirstTrades.length > 0 ? (shortWinningFirst.length / shortFirstTrades.length) * 100 : 0;
+
+			return {
+				firstTradeWinRate,
+				longFirstTradeWinRate,
+				shortFirstTradeWinRate
+			};
 		};
 
 		const totalNet = trades.reduce((sum, t) => sum + t.neto, 0);
@@ -115,14 +165,10 @@
 				: 0;
 		const shortRiskReward = shortAvgLoss > 0 ? shortAvgWin / shortAvgLoss : 0;
 
-		const expectation = (winRate / 100) * avgWin - (1 - winRate / 100) * avgLoss;
-		const longExpectation =
-			(longWinRate / 100) * longAvgWin - (1 - longWinRate / 100) * longAvgLoss;
-		const shortExpectation =
-			(shortWinRate / 100) * shortAvgWin - (1 - shortWinRate / 100) * shortAvgLoss;
-
 		const maxWin = Math.max(...trades.map((t) => t.neto), 0);
 		const maxLoss = Math.min(...trades.map((t) => t.neto), 0);
+
+		const { firstTradeWinRate, longFirstTradeWinRate, shortFirstTradeWinRate } = calculateFirstTradeWinRate();
 
 		return {
 			totalNet,
@@ -137,9 +183,9 @@
 			riskRewardRatio,
 			longRiskReward,
 			shortRiskReward,
-			expectation,
-			longExpectation,
-			shortExpectation,
+			firstTradeWinRate,
+			longFirstTradeWinRate,
+			shortFirstTradeWinRate,
 			maxWin,
 			maxLoss,
 			totalTrades: trades.length,
@@ -172,6 +218,9 @@ MÉTRICAS DE RENDIMIENTO:
 - Tasa de aciertos: ${metrics.winRate.toFixed(1)}%
   - Aciertos en largas: ${metrics.longWinRate.toFixed(1)}%
   - Aciertos en cortas: ${metrics.shortWinRate.toFixed(1)}%
+- Winrate primera operación del día: ${metrics.firstTradeWinRate.toFixed(1)}%
+  - Winrate primeras largas: ${metrics.longFirstTradeWinRate.toFixed(1)}%
+  - Winrate primeras cortas: ${metrics.shortFirstTradeWinRate.toFixed(1)}%
 - Factor de beneficio: ${metrics.profitFactor.toFixed(2)}
   - Factor en largas: ${metrics.longProfitFactor.toFixed(2)}
   - Factor en cortas: ${metrics.shortProfitFactor.toFixed(2)}
@@ -183,9 +232,6 @@ CARACTERÍSTICAS DE LAS OPERACIONES:
 - Duración promedio: ${metrics.avgTradeDuration.toFixed(2)} minutos
   - Duración en largas: ${metrics.longAvgTradeDuration.toFixed(2)} minutos
   - Duración en cortas: ${metrics.shortAvgTradeDuration.toFixed(2)} minutos
-- Expectativa por operación: $${metrics.expectation.toFixed(2)}
-  - Expectativa en largas: $${metrics.longExpectation.toFixed(2)}
-  - Expectativa en cortas: $${metrics.shortExpectation.toFixed(2)}
 `;
 
         updateIAResume('generalResume', resume);
@@ -261,15 +307,15 @@ CARACTERÍSTICAS DE LAS OPERACIONES:
 					>
 				</tr>
 				<tr>
-					<td class="px-4 py-2 text-sm whitespace-nowrap text-gray-900">Expectativa $</td>
+					<td class="px-4 py-2 text-sm whitespace-nowrap text-gray-900">Winrate primera operación del día (%)</td>
 					<td class="px-4 py-2 text-sm whitespace-nowrap text-gray-900"
-						>{metrics.expectation.toFixed(2)}</td
+						>{metrics.firstTradeWinRate.toFixed(1)}%</td
 					>
 					<td class="px-4 py-2 text-sm whitespace-nowrap text-gray-900"
-						>{metrics.longExpectation.toFixed(2)}</td
+						>{metrics.longFirstTradeWinRate.toFixed(1)}%</td
 					>
 					<td class="px-4 py-2 text-sm whitespace-nowrap text-gray-900"
-						>{metrics.shortExpectation.toFixed(2)}</td
+						>{metrics.shortFirstTradeWinRate.toFixed(1)}%</td
 					>
 				</tr>
 				<tr>
