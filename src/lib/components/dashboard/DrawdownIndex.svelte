@@ -149,13 +149,31 @@ RACHA ACTUAL:
                     {stats.maxDrawdown.date}
                 </div>
             </div>
-            <div class="bg-gray-50 p-2 rounded border border-gray-400 h-full flex flex-col">
-                <div class="font-medium text-gray-700">Racha actual</div>
+            <div class="p-2 rounded border border-gray-400 h-full flex flex-col 
+                {stats.currentStreak >= 30 ? 'bg-gradient-to-br from-blue-500 to-blue-700 text-white' : 
+                stats.currentStreak >= 20 ? 'bg-gradient-to-br from-emerald-500 to-emerald-700 text-white' : 
+                stats.currentStreak >= 15 ? 'bg-gradient-to-br from-yellow-500 to-yellow-600 text-white' : 
+                stats.currentStreak >= 7 ? 'bg-gradient-to-br from-gray-500 to-gray-700 text-white' : 
+                'bg-gradient-to-br from-amber-700 via-amber-600 to-amber-800 text-white'}">
+                <div class="font-medium">Racha actual</div>
                 <div class="text-lg font-semibold flex-1 flex items-center justify-center">
                     {stats.currentStreak} días
                 </div>
-                <div class="text-xs text-gray-700 text-center">
+                <div class="text-xs text-center opacity-90">
                     sin drawdown ≥5%
+                    {#if stats.currentStreak < 30}
+                        <div class="mt-1 font-medium opacity-100">
+                            {#if stats.currentStreak >= 20}
+                                +{30 - stats.currentStreak} para <span class="text-blue-300">Diamante</span>
+                            {:else if stats.currentStreak >= 15}
+                                +{20 - stats.currentStreak} para <span class="text-emerald-300">Esmeralda</span>
+                            {:else if stats.currentStreak >= 7}
+                                +{15 - stats.currentStreak} para <span class="text-yellow-300">Oro</span>
+                            {:else}
+                                +{7 - stats.currentStreak} para <span class="text-gray-300">Plata</span>
+                            {/if}
+                        </div>
+                    {/if}
                 </div>
             </div>
         </div>
