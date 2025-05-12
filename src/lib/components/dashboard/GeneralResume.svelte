@@ -4,9 +4,37 @@
 
 	export let trades: FormattedTrade[] = [];
 
-	$: metrics = calculateMetrics(trades);
+	let metrics = {
+		totalNet: 0,
+		longNet: 0,
+		shortNet: 0,
+		profitFactor: 0,
+		longProfitFactor: 0,
+		shortProfitFactor: 0,
+		winRate: 0,
+		longWinRate: 0,
+		shortWinRate: 0,
+		riskRewardRatio: 0,
+		longRiskReward: 0,
+		shortRiskReward: 0,
+		firstTradeWinRate: 0,
+		longFirstTradeWinRate: 0,
+		shortFirstTradeWinRate: 0,
+		maxWin: 0,
+		maxLoss: 0,
+		totalTrades: 0,
+		longTrades: 0,
+		shortTrades: 0,
+		avgTradeDuration: 0,
+		longAvgTradeDuration: 0,
+		shortAvgTradeDuration: 0
+	};
+	
+	$: {
+		metrics = calculateMetrics(trades);
+		generateIAResume();
+	}
 
-	$: generateIAResume();
 
 	function calculateMetrics(trades: FormattedTrade[]) {
 		if (trades.length === 0) {

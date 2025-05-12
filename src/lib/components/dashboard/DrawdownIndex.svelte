@@ -8,12 +8,27 @@
         date: string;
         maxDrawdown: number;
     }
-
-    $: stats = {
-        ...calculateDrawdownStats(trades),
+    
+    let stats = {
+        counts: {
+            totalDays: 0,
+            daysOver5: 0,
+            daysOver10: 0,
+            daysOver15: 0
+        },
+        probabilities: {
+            over5: 0,
+            over10: 0,
+            over15: 0
+        },
+        maxDrawdown: { value: 0, date: '' },
+        currentStreak: 0
     };
 
-    $: generateIAResume();
+    $: {
+        stats = calculateDrawdownStats(trades);
+        generateIAResume();
+    }
 
     function calculateDrawdownStats(trades: FormattedTrade[]) {
         const dailyData: Record<string, DayStats> = {};

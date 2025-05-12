@@ -21,10 +21,25 @@
         { label: '3:30 PM', start: 15.5, end: 16 },
         { label: 'Market Close', start: 16, end: 24 }    // 04:00 PM - 00:00
     ];
+    interface Stats {
+        days?: string[];
+        winners: number[];
+        losers: number[];
+        netProfit: number[];
+        volume: number[];
+    }
+    
+    let stats: Stats = {
+        winners: [],
+        losers: [],
+        netProfit: [],
+        volume: []
+    };
 
-    // Procesamiento reactivo de datos
-    $: stats = viewMode === 'day' ? processTradesByWeekday(trades) : processTradesByHour(trades);
-    $: generateIAResume();
+    $: {
+        stats = viewMode === 'day' ? processTradesByWeekday(trades) : processTradesByHour(trades);
+        generateIAResume();
+    }
 
     onMount(() => {
         renderChart();

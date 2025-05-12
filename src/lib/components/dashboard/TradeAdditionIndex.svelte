@@ -14,8 +14,21 @@
         lossAdditionWinRate: number;
     }
 
-    $: stats = calculateAdditionStats(trades);
-    $: generateIAResume();
+    let stats: AdditionStats = {
+        totalAdditions: 0,
+        wonAdditions: 0,
+        addedInProfit: 0,
+        addedInLoss: 0,
+        additionWinRate: 0,
+        profitAdditionWinRate: 0,
+        lossAdditionWinRate: 0
+    };
+    
+    $: {
+        stats = calculateAdditionStats(trades);
+        generateIAResume();
+    }
+    
 
     function calculateAdditionStats(trades: FormattedTrade[]): AdditionStats {
         // Ordenar trades por fecha de apertura
