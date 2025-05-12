@@ -31,7 +31,7 @@
             const dateKey = `${year}-${month}-${day}`;
             
             if (!dailyData[dateKey]) {
-                dailyData[dateKey] = { date: `${day}/${month}`, maxDrawdown: 0 };
+                dailyData[dateKey] = { date: `${day}/${month}/${year}`, maxDrawdown: 0 };
                 currentPeak = trade.saldo;
                 currentTrough = trade.saldo;
             }
@@ -61,12 +61,21 @@
 
         const days = Object.values(dailyData);
         const totalDays = days.length;
+        const daysOver5 = days.filter(d => d.maxDrawdown >= 5).length;
+        const daysOver10 = days.filter(d => d.maxDrawdown >= 10).length;
+        const daysOver15 = days.filter(d => d.maxDrawdown >= 15).length;
 
         return {
+            counts: {
+                totalDays,
+                daysOver5,
+                daysOver10,
+                daysOver15
+            },
             probabilities: {
-                over5: totalDays > 0 ? days.filter(d => d.maxDrawdown >= 5).length / totalDays * 100 : 0,
-                over10: totalDays > 0 ? days.filter(d => d.maxDrawdown >= 10).length / totalDays * 100 : 0,
-                over15: totalDays > 0 ? days.filter(d => d.maxDrawdown >= 15).length / totalDays * 100 : 0
+                over5: totalDays > 0 ? daysOver5 / totalDays * 100 : 0,
+                over10: totalDays > 0 ? daysOver10 / totalDays * 100 : 0,
+                over15: totalDays > 0 ? daysOver15 / totalDays * 100 : 0
             },
             maxDrawdown: days.reduce((max, day) => day.maxDrawdown > max.value ? 
                 { value: day.maxDrawdown, date: day.date } : max, 
@@ -94,10 +103,10 @@
         const resume = `
 ANÁLISIS DE DRAWDOWN:
 
-PROBABILIDADES DIARIAS (es decir, que en un día cualquiera el drawdown sea mayor a):
-- Probabilidad de drawdown ≥5%: ${stats.probabilities.over5.toFixed(1)}%
-- Probabilidad de drawdown ≥10%: ${stats.probabilities.over10.toFixed(1)}%
-- Probabilidad de drawdown ≥15%: ${stats.probabilities.over15.toFixed(1)}%
+Histórico en días (es decir, cuantos días he tenido drawdown en compración al total de días activo):
+- Mayor al ≥5%: ${stats.probabilities.over5.toFixed(1)}% (${stats.counts.daysOver5}/${stats.counts.totalDays} días)
+- Mayor al ≥10%: ${stats.probabilities.over10.toFixed(1)}% (${stats.counts.daysOver10}/${stats.counts.totalDays} días)
+- Mayor al ≥15%: ${stats.probabilities.over15.toFixed(1)}% (${stats.counts.daysOver15}/${stats.counts.totalDays} días)
 
 MÁXIMOS HISTÓRICOS:
 - Mayor drawdown registrado: ${stats.maxDrawdown.value.toFixed(1)}%
@@ -118,21 +127,27 @@ RACHA ACTUAL:
                 <thead>
                     <tr>
                         <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Drawdown</th>
-                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Posibilidad diaria</th>
+                        <th class="px-4 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Histórico (días)</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-400">
                     <tr>
                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 5%</td>
-                        <td data-tooltip="{stats.probabilities.over5 >= 15 ? '≥ 15% rango peligroso' : stats.probabilities.over5 >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over5 >= 15 ? 'bg-red-100' : stats.probabilities.over5 >= 10 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over5.toFixed(0)}%</td>
+                        <td data-tooltip="{stats.probabilities.over5 >= 15 ? '≥ 15% rango peligroso' : stats.probabilities.over5 >= 10 ? '≥ 10% rango óptimo' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over5 >= 15 ? 'bg-red-100' : stats.probabilities.over5 >= 10 ? 'bg-blue-100' : 'bg-green-100'}">
+                            {stats.counts.daysOver5} de {stats.counts.totalDays} ({(stats.counts.daysOver5/stats.counts.totalDays * 100).toFixed(1)}%)
+                        </td>
                     </tr>
                     <tr>
                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 10%</td>
-                        <td data-tooltip="{stats.probabilities.over10 >= 5 ? 'Reducir al 5%' : stats.probabilities.over10 >= 3 ? 'Rango optimo, reducir al 3%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over10 >= 5 ? 'bg-red-100' : stats.probabilities.over10 >= 3 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over10.toFixed(0)}%</td>
+                        <td data-tooltip="{stats.probabilities.over10 >= 5 ? 'Reducir al 5%' : stats.probabilities.over10 >= 3 ? 'Rango optimo, reducir al 3%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over10 >= 5 ? 'bg-red-100' : stats.probabilities.over10 >= 3 ? 'bg-blue-100' : 'bg-green-100'}">
+                            {stats.counts.daysOver10} de {stats.counts.totalDays} ({(stats.counts.daysOver10/stats.counts.totalDays * 100).toFixed(1)}%)
+                        </td>
                     </tr>
                     <tr>
                         <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-900">Mayor al 15%</td>
-                        <td data-tooltip="{stats.probabilities.over15 >= 1 ? 'Reducir al 1%' : stats.probabilities.over15 >= 0.5 ? 'Rango optimo, reducir al 0.5%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over15 >= 1 ? 'bg-red-100' : stats.probabilities.over15 >= 0.5 ? 'bg-blue-100' : 'bg-green-100'}">{stats.probabilities.over15.toFixed(0)}%</td>
+                        <td data-tooltip="{stats.probabilities.over15 >= 1 ? 'Reducir al 1%' : stats.probabilities.over15 >= 0.5 ? 'Rango optimo, reducir al 0.5%' : 'Rango seguro'}" class="px-4 py-2 whitespace-nowrap text-sm text-gray-900 {stats.probabilities.over15 >= 1 ? 'bg-red-100' : stats.probabilities.over15 >= 0.5 ? 'bg-blue-100' : 'bg-green-100'}">
+                            {stats.counts.daysOver15} de {stats.counts.totalDays} ({(stats.counts.daysOver15/stats.counts.totalDays * 100).toFixed(1)}%)
+                        </td>
                     </tr>      
                 </tbody>
             </table>

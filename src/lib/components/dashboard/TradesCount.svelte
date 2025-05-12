@@ -70,8 +70,8 @@
 		const resume = `
 RESUMEN RÁPIDO:
 - Rango de fechas: ${trades[0].fecha_cierre.split(' ')[0]} hasta ${trades[trades.length - 1].fecha_cierre.split(' ')[0]}
-- Días en total: ${totalDays}
-- Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo)
+- Días en total del rango de fechas: ${totalDays}
+- Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo, esto excluye fines de semana, festivos y días sin trades)
 - Balance inicial: $${initialBalance.toFixed(2)}
 - Balance final: $${finalBalance.toFixed(2)}
 - Cambio de balance: $${(finalBalance - initialBalance).toFixed(2)} (${((finalBalance - initialBalance) / initialBalance * 100).toFixed(2)}%)
