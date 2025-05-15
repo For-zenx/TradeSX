@@ -12,7 +12,6 @@
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
 	import WeekdayChart from '$lib/components/dashboard/WeekdayChart.svelte';
-	import TradeAdditionIndex from '$lib/components/dashboard/TradeAdditionIndex.svelte';
     
     let allTrades: FormattedTrade[] = [];
     let filteredTrades = $state<FormattedTrade[]>([]);
@@ -90,7 +89,6 @@
         <GeneralResume trades={filteredTrades}/>
         <DrawdownIndex trades={filteredTrades}/>
         <WeekdayChart trades={filteredTrades}/>
-        <TradeAdditionIndex trades={filteredTrades}/>
     </div>
     <div class="flex justify-end mt-4">
         <button class="text-blue-700 hover:text-blue-900 font-medium py-2 px-4 rounded transition-colors" onclick={copyIAResume}>
