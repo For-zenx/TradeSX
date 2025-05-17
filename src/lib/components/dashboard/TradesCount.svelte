@@ -10,6 +10,9 @@
 	let balance: number = 0;
 	let winRateValue: number = 0;
 	let tradesPerDay: number = 0;
+	let totalProfit: number = 0;
+	let totalLoss: number = 0;
+	let netProfit: number = 0;
 
 	$: {
 		const stats = {
@@ -17,17 +20,26 @@
 			losses: 0,
 			total: 0,
 			balance: 0,
-			tradesPerDay: 0
+			tradesPerDay: 0,
+			totalProfit: 0,
+			totalLoss: 0,
+			netProfit: 0
 		};
 
 		if (trades.length > 0) {
 			trades.forEach((trade) => {
-				if (trade.neto > 0) stats.wins++;
-				else if (trade.neto < 0) stats.losses++;
+				if (trade.neto > 0) {
+					stats.wins++;
+					stats.totalProfit += trade.neto;
+				} else if (trade.neto < 0) {
+					stats.losses++;
+					stats.totalLoss += Math.abs(trade.neto);
+				}
 			});
 
 			stats.total = trades.length;
 			stats.balance = trades[trades.length - 1].saldo;
+			stats.netProfit = stats.totalProfit - stats.totalLoss;
 
 			const uniqueDays = new Set(trades.map((trade) => trade.fecha_cierre.split(' ')[0])).size;
 
@@ -40,6 +52,9 @@
 		balance = stats.balance;
 		winRateValue = wins + losses > 0 ? (wins / trades.length) * 100 : 0;
 		tradesPerDay = stats.tradesPerDay;
+		totalProfit = stats.totalProfit;
+		totalLoss = stats.totalLoss;
+		netProfit = stats.netProfit;
 
 		generateIAResume();
 	}
@@ -64,8 +79,10 @@
 		const lastDate = new Date(trades[trades.length - 1].fecha_cierre.split(' ')[0].split('/').reverse().join('-'));
 		const totalDays = Math.ceil((lastDate.getTime() - firstDate.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 		
-		const initialBalance = trades[0].saldo - trades[0].neto; // Saldo antes del primer trade
+		const initialBalance = trades[0].saldo - trades[0].neto; 
 		const finalBalance = trades[trades.length - 1].saldo;
+		
+		const profitPercentage = (netProfit / (totalProfit + totalLoss)) * 100;
 		
 		const resume = `
 RESUMEN RÁPIDO:
@@ -74,7 +91,9 @@ RESUMEN RÁPIDO:
 - Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo, esto excluye fines de semana, festivos y días sin trades)
 - Balance inicial: $${initialBalance.toFixed(2)}
 - Balance final: $${finalBalance.toFixed(2)}
-- Cambio de balance: $${(finalBalance - initialBalance).toFixed(2)} (${((finalBalance - initialBalance) / initialBalance * 100).toFixed(2)}%)
+- Ganancias totales: $${totalProfit.toFixed(2)} (${(totalProfit / initialBalance * 100).toFixed(2)}%)
+- Pérdidas totales: $${totalLoss.toFixed(2)} (${(totalLoss / initialBalance * 100).toFixed(2)}%)
+- Ganancia neta: $${netProfit.toFixed(2)} (${profitPercentage.toFixed(2)}% de efectividad) (excluyendo retiros o depósitos)
 - Trades por día (average): ${tradesPerDay}
 `;
 
@@ -85,19 +104,22 @@ RESUMEN RÁPIDO:
 <div class="flex w-full items-center justify-between bg-white px-4 py-3">
 	<div>
 		<div class="font-mono text-gray-600">
-			Desde: {trades.length > 0 ? trades[0].fecha_cierre.split(' ')[0] : 'N/A'}, Hasta: {trades.length >
-			0
+			Desde: {trades.length > 0 ? trades[0].fecha_cierre.split(' ')[0] : 'N/A'}, Hasta: {trades.length > 0
 				? trades[trades.length - 1].fecha_cierre.split(' ')[0]
 				: 'N/A'}
 		</div>
 		<div class="flex items-center gap-2">
-			<span class="text-sm font-medium text-gray-700"
-				>Saldo: <span
-					class="text-base font-semibold {balance >= 0 ? 'text-green-600' : 'text-red-600'}"
-				>
+			<span class="text-sm font-medium text-gray-700">
+				Saldo: <span class="text-base font-semibold">
 					{formattedBalance}
-				</span></span
-			>
+				</span>
+			</span>
+			<!-- Nueva línea: Ganancia total con porcentaje -->
+			<span class="text-sm font-medium text-gray-700">
+				<span class="text-sm {netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">
+					(${netProfit.toFixed(2)}, {(netProfit / (trades[0].saldo - trades[0].neto) * 100).toFixed(2)}%)
+				</span>
+			</span>
 		</div>
 	</div>
 
