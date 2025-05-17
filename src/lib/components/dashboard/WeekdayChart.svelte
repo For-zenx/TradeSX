@@ -8,32 +8,37 @@
     let chart: Chart;
     let viewMode: 'day' | 'hour' = 'day';
 
-    // Segmentos horarios (hora de Nueva York)
     const timeSegments = [
-        { label: 'Pre-Market', start: 0, end: 9.5 },    // 00:00 - 09:30 AM
-        { label: '9:30 AM', start: 9.5, end: 10 },      // 09:30 - 10:00 AM
+        { label: 'Pre-Market', start: 0, end: 9.5 },
+        { label: '9:30 AM', start: 9.5, end: 10 },
         { label: '10:00 AM', start: 10, end: 10.5 },
-        { label: '10:30 AM', start: 10.5, end: 11.5 },
-        { label: '11:30 AM', start: 11.5, end: 12.5 },
-        { label: '12:30 PM', start: 12.5, end: 13.5 },
-        { label: '1:30 PM', start: 13.5, end: 14.5 },
-        { label: '2:30 PM', start: 14.5, end: 15.5 },
-        { label: '3:30 PM', start: 15.5, end: 16 },
-        { label: 'Market Close', start: 16, end: 24 }    // 04:00 PM - 00:00
+        { label: '10:30 AM', start: 10.5, end: 11 },
+        { label: '11:00 AM', start: 11, end: 12 },
+        { label: '12:00 PM', start: 12, end: 12.5 },
+        { label: '12:30 PM', start: 12.5, end: 13 },
+        { label: '1:00 PM', start: 13, end: 14 },
+        { label: '2:00 PM', start: 14, end: 15 },
+        { label: '3:00 PM', start: 15, end: 16 },
+        { label: 'After-Market', start: 16, end: 24 }
     ];
+
     interface Stats {
         days?: string[];
         winners: number[];
         losers: number[];
         netProfit: number[];
         volume: number[];
+        avgWin: number[];
+        avgLoss: number[];
     }
     
     let stats: Stats = {
         winners: [],
         losers: [],
         netProfit: [],
-        volume: []
+        volume: [],
+        avgWin: [],
+        avgLoss: []
     };
 
     $: {
@@ -94,11 +99,23 @@
                     tooltip: {
                         callbacks: {
                             afterLabel: function(context) {
-                                const total = (stats.winners[context.dataIndex] || 0) + (stats.losers[context.dataIndex] || 0);
+                                const index = context.dataIndex;
+                                const datasetIndex = context.datasetIndex;
+                                const total = (stats.winners[index] || 0) + (stats.losers[index] || 0);
+                                
                                 if (total === 0) return 'No hay trades';
-                                const value = context.dataset.data[context.dataIndex] as number;
+                                
+                                const value = context.dataset.data[index] as number;
                                 const percentage = ((value / total) * 100).toFixed(1);
-                                return `Porcentaje: ${percentage}%`;
+                                
+                                const avgText = datasetIndex === 0 
+                                    ? `Ganancia promedio: $${stats.avgWin[index].toFixed(2)}`
+                                    : `Pérdida promedio: $${stats.avgLoss[index].toFixed(2)}`;
+                                
+                                return [
+                                    `Porcentaje: ${percentage}%`,
+                                    avgText
+                                ].join('\n');
                             }
                         }
                     }
@@ -107,7 +124,7 @@
                     x: { 
                         grid: { display: false }, 
                         stacked: false,
-                        ticks: { maxRotation: viewMode === 'hour' ? 45 : 0 } // Rotar labels en modo hora
+                        ticks: { maxRotation: viewMode === 'hour' ? 45 : 0 }
                     },
                     y: {
                         position: 'right',
@@ -122,10 +139,12 @@
 
     function processTradesByWeekday(trades: FormattedTrade[]) {
         const dayStats = {
-            winners: [0, 0, 0, 0, 0, 0, 0], // 0=Domingo, 1=Lunes...
+            winners: [0, 0, 0, 0, 0, 0, 0],
             losers: [0, 0, 0, 0, 0, 0, 0],
             netProfit: [0, 0, 0, 0, 0, 0, 0],
-            volume: [0, 0, 0, 0, 0, 0, 0]
+            volume: [0, 0, 0, 0, 0, 0, 0],
+            totalWins: [0, 0, 0, 0, 0, 0, 0],
+            totalLosses: [0, 0, 0, 0, 0, 0, 0]
         };
 
         trades.forEach((trade) => {
@@ -136,20 +155,32 @@
 
             if (trade.neto >= 0) {
                 dayStats.winners[weekday]++;
+                dayStats.totalWins[weekday] += trade.neto;
             } else {
                 dayStats.losers[weekday]++;
+                dayStats.totalLosses[weekday] += Math.abs(trade.neto);
             }
             dayStats.netProfit[weekday] += trade.neto;
             dayStats.volume[weekday]++;
         });
 
         const weekdays = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes'];
+        
+        const avgWin = dayStats.winners.map((count, i) => 
+            count > 0 ? dayStats.totalWins[i] / count : 0
+        );
+        const avgLoss = dayStats.losers.map((count, i) => 
+            count > 0 ? dayStats.totalLosses[i] / count : 0
+        );
+
         return {
             days: weekdays,
-            winners: dayStats.winners.slice(1, 6), // Extraer Lunes(1)-Viernes(5)
+            winners: dayStats.winners.slice(1, 6),
             losers: dayStats.losers.slice(1, 6),
             netProfit: dayStats.netProfit.slice(1, 6),
-            volume: dayStats.volume.slice(1, 6)
+            volume: dayStats.volume.slice(1, 6),
+            avgWin: avgWin.slice(1, 6),
+            avgLoss: avgLoss.slice(1, 6)
         };
     }
 
@@ -158,7 +189,9 @@
             winners: new Array(timeSegments.length).fill(0),
             losers: new Array(timeSegments.length).fill(0),
             netProfit: new Array(timeSegments.length).fill(0),
-            volume: new Array(timeSegments.length).fill(0)
+            volume: new Array(timeSegments.length).fill(0),
+            totalWins: new Array(timeSegments.length).fill(0),
+            totalLosses: new Array(timeSegments.length).fill(0)
         };
 
         trades.forEach((trade) => {
@@ -174,52 +207,74 @@
             if (segmentIndex !== -1) {
                 if (trade.neto >= 0) {
                     hourStats.winners[segmentIndex]++;
+                    hourStats.totalWins[segmentIndex] += trade.neto;
                 } else {
                     hourStats.losers[segmentIndex]++;
+                    hourStats.totalLosses[segmentIndex] += Math.abs(trade.neto);
                 }
                 hourStats.netProfit[segmentIndex] += trade.neto;
                 hourStats.volume[segmentIndex]++;
             }
         });
 
-        return hourStats;
+        const avgWin = hourStats.winners.map((count, i) => 
+            count > 0 ? hourStats.totalWins[i] / count : 0
+        );
+        const avgLoss = hourStats.losers.map((count, i) => 
+            count > 0 ? hourStats.totalLosses[i] / count : 0
+        );
+
+        return {
+            winners: hourStats.winners,
+            losers: hourStats.losers,
+            netProfit: hourStats.netProfit,
+            volume: hourStats.volume,
+            avgWin,
+            avgLoss
+        };
     }
 
-function generateIAResume() {
-    if (trades.length === 0) {
-        updateIAResume('weekdayPerformance', 'No hay datos de trades disponibles');
-        return;
-    }
+    function generateIAResume() {
+        if (trades.length === 0) {
+            updateIAResume('weekdayPerformance', 'No hay datos de trades disponibles');
+            return;
+        }
 
-    // Procesar datos por día y por hora
-    const dayStats = processTradesByWeekday(trades);
-    const hourStats = processTradesByHour(trades);
+        const dayStats = processTradesByWeekday(trades);
+        const hourStats = processTradesByHour(trades);
 
-    // Calcular métricas generales
-    const totalTrades = trades.length;
-    const totalWinners = trades.filter(t => t.neto >= 0).length;
-    const totalLosers = totalTrades - totalWinners;
-    const winRate = totalTrades > 0 ? (totalWinners / totalTrades) * 100 : 0;
-    const totalProfit = trades.reduce((sum, t) => sum + t.neto, 0);
-    const avgProfitPerTrade = totalTrades > 0 ? totalProfit / totalTrades : 0;
+        const winningTrades = trades.filter(t => t.neto >= 0);
+        const losingTrades = trades.filter(t => t.neto < 0);
+        
+        const totalWinners = winningTrades.length;
+        const totalLosers = losingTrades.length;
+        const totalProfit = trades.reduce((sum, t) => sum + t.neto, 0);
+        
+        const avgWin = totalWinners > 0 
+            ? winningTrades.reduce((sum, t) => sum + t.neto, 0) / totalWinners 
+            : 0;
+        const avgLoss = totalLosers > 0 
+            ? Math.abs(losingTrades.reduce((sum, t) => sum + t.neto, 0)) / totalLosers 
+            : 0;
 
-    // Crear resumen estructurado
-    const resume = `## RENDIMIENTO POR DÍA (LUNES-VIERNES)
+        const resume = `## RENDIMIENTO POR DÍA (LUNES-VIERNES)
 ${dayStats.days.map((day, i) => `
 ### ${day}
-- Trades totales: ${dayStats.volume[i]} (${dayStats.winners[i]}G / ${dayStats.losers[i]}P)
-- Tasa de éxito: ${(dayStats.winners[i] / dayStats.volume[i] * 100 || 0).toFixed(1)}%
+- Trades: ${dayStats.volume[i]} (${dayStats.winners[i]}G / ${dayStats.losers[i]}P)
+- Ganancia promedio (G): $${dayStats.avgWin[i].toFixed(2)}
+- Pérdida promedio (P): $${dayStats.avgLoss[i].toFixed(2)}
 - Beneficio neto: $${dayStats.netProfit[i].toFixed(2)}`).join('')}
 
 ## RENDIMIENTO POR HORARIO (EST NY TIME)
 ${timeSegments.map((seg, i) => `
 ### ${seg.label}
-- Trades totales: ${hourStats.volume[i]} (${hourStats.winners[i]}G / ${hourStats.losers[i]}P)
-- Tasa de éxito: ${(hourStats.winners[i] / hourStats.volume[i] * 100 || 0).toFixed(1)}%
+- Trades: ${hourStats.volume[i]} (${hourStats.winners[i]}G / ${hourStats.losers[i]}P)
+- Ganancia promedio (G): $${hourStats.avgWin[i].toFixed(2)}
+- Pérdida promedio (P): $${hourStats.avgLoss[i].toFixed(2)}
 - Beneficio neto: $${hourStats.netProfit[i].toFixed(2)}`).join('')}`;
 
-    updateIAResume('weekdayPerformance', resume);
-}
+        updateIAResume('weekdayPerformance', resume);
+    }
 </script>
 
 <div class="h-auto max-h-96 rounded-sm bg-gray-200 col-span-2">

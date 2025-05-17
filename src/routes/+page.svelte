@@ -8,6 +8,7 @@
     import CapitalChart from '$lib/components/dashboard/CapitalChart.svelte';
 	import GeneralResume from '$lib/components/dashboard/GeneralResume.svelte';
 	import DrawdownIndex from '$lib/components/dashboard/DrawdownIndex.svelte';
+    import TradingCalendar from '$lib/components/dashboard/TradingCalendar.svelte';
     import { iaResumeStore, getFullResume } from '$lib/stores/iaResume';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
@@ -89,6 +90,7 @@
         <GeneralResume trades={filteredTrades}/>
         <DrawdownIndex trades={filteredTrades}/>
         <WeekdayChart trades={filteredTrades}/>
+        <TradingCalendar trades={filteredTrades}/>
     </div>
     <div class="flex justify-end mt-4">
         <button class="text-blue-700 hover:text-blue-900 font-medium py-2 px-4 rounded transition-colors" onclick={copyIAResume}>
