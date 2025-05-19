@@ -245,9 +245,9 @@ MÉTRICAS DE RENDIMIENTO:
 - Tasa de aciertos: ${metrics.winRate.toFixed(1)}%
   - Aciertos en largas: ${metrics.longWinRate.toFixed(1)}%
   - Aciertos en cortas: ${metrics.shortWinRate.toFixed(1)}%
-- Winrate primera operación del día: ${metrics.firstTradeWinRate.toFixed(1)}%
-  - Winrate primeras largas: ${metrics.longFirstTradeWinRate.toFixed(1)}%
-  - Winrate primeras cortas: ${metrics.shortFirstTradeWinRate.toFixed(1)}%
+- Tasa de aciertos primera operación del día: ${metrics.firstTradeWinRate.toFixed(1)}%
+  - Acierto en la primera operación del día en largas: ${metrics.longFirstTradeWinRate.toFixed(1)}%
+  - Acierto en la primera operación del día en cortas: ${metrics.shortFirstTradeWinRate.toFixed(1)}%
 - Factor de beneficio: ${metrics.profitFactor.toFixed(2)}
   - Factor en largas: ${metrics.longProfitFactor.toFixed(2)}
   - Factor en cortas: ${metrics.shortProfitFactor.toFixed(2)}

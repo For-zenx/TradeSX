@@ -13,6 +13,7 @@
 	let totalProfit: number = 0;
 	let totalLoss: number = 0;
 	let netProfit: number = 0;
+	let totalCommissions: number = 0;
 
 	$: {
 		const stats = {
@@ -23,7 +24,8 @@
 			tradesPerDay: 0,
 			totalProfit: 0,
 			totalLoss: 0,
-			netProfit: 0
+			netProfit: 0,
+			totalCommissions: 0,
 		};
 
 		if (trades.length > 0) {
@@ -35,6 +37,7 @@
 					stats.losses++;
 					stats.totalLoss += Math.abs(trade.neto);
 				}
+				stats.totalCommissions += trade.comision || 0; // Sumar comisiones
 			});
 
 			stats.total = trades.length;
@@ -42,7 +45,6 @@
 			stats.netProfit = stats.totalProfit - stats.totalLoss;
 
 			const uniqueDays = new Set(trades.map((trade) => trade.fecha_cierre.split(' ')[0])).size;
-
 			stats.tradesPerDay = uniqueDays > 0 ? Math.round(trades.length / uniqueDays) : 0;
 		}
 
@@ -55,6 +57,7 @@
 		totalProfit = stats.totalProfit;
 		totalLoss = stats.totalLoss;
 		netProfit = stats.netProfit;
+		totalCommissions = stats.totalCommissions; // Nuevo
 
 		generateIAResume();
 	}
@@ -88,12 +91,14 @@
 RESUMEN RÁPIDO:
 - Rango de fechas: ${trades[0].fecha_cierre.split(' ')[0]} hasta ${trades[trades.length - 1].fecha_cierre.split(' ')[0]}
 - Días en total del rango de fechas: ${totalDays}
-- Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo, esto excluye fines de semana, festivos y días sin trades)
+- Días de trading activos: ${tradingDays} (${Math.round((tradingDays / totalDays) * 100)}% del periodo)
 - Balance inicial: $${initialBalance.toFixed(2)}
 - Balance final: $${finalBalance.toFixed(2)}
 - Ganancias totales: $${totalProfit.toFixed(2)} (${(totalProfit / initialBalance * 100).toFixed(2)}%)
 - Pérdidas totales: $${totalLoss.toFixed(2)} (${(totalLoss / initialBalance * 100).toFixed(2)}%)
-- Ganancia neta: $${netProfit.toFixed(2)} (${profitPercentage.toFixed(2)}% de efectividad) (excluyendo retiros o depósitos)
+- Comisiones totales: $${totalCommissions.toFixed(2)} (${(totalCommissions / initialBalance * 100).toFixed(2)}%)
+- Comisión promedio por trade: $${(totalCommissions / total).toFixed(2)}
+- Ganancia neta: $${netProfit.toFixed(2)} (${profitPercentage.toFixed(2)}% de efectividad), incluye comisiones
 - Trades por día (average): ${tradesPerDay}
 `;
 
@@ -114,7 +119,6 @@ RESUMEN RÁPIDO:
 					{formattedBalance}
 				</span>
 			</span>
-			<!-- Nueva línea: Ganancia total con porcentaje -->
 			<span class="text-sm font-medium text-gray-700">
 				<span class="text-sm {netProfit >= 0 ? 'text-green-600' : 'text-red-600'}">
 					(${netProfit.toFixed(2)}, {(netProfit / (trades[0].saldo - trades[0].neto) * 100).toFixed(2)}%)
@@ -203,6 +207,17 @@ RESUMEN RÁPIDO:
 				>
 					{winRateDisplay}
 				</span></span
+			>
+		</div>
+
+		<div class="h-4 w-px bg-gray-200"></div>
+
+		<div 
+			data-tooltip="Avg: ${(totalCommissions / total).toFixed(2)}"
+			class="flex items-center gap-1"
+		>
+			<span class="text-sm font-medium text-gray-700"
+				>Comisiones: <span class="text-right text-sm font-semibold text-gray-800">${totalCommissions.toFixed()}</span></span
 			>
 		</div>
 	</div>

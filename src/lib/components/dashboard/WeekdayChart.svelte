@@ -15,7 +15,6 @@
         { label: '10:30 AM', start: 10.5, end: 11 },
         { label: '11:00 AM', start: 11, end: 12 },
         { label: '12:00 PM', start: 12, end: 12.5 },
-        { label: '12:30 PM', start: 12.5, end: 13 },
         { label: '1:00 PM', start: 13, end: 14 },
         { label: '2:00 PM', start: 14, end: 15 },
         { label: '3:00 PM', start: 15, end: 16 },
