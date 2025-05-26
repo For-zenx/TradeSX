@@ -277,7 +277,7 @@ ${timeSegments.map((seg, i) => `
 </script>
 
 <div class="h-auto max-h-96 rounded-sm bg-gray-200 col-span-2">
-    <div class="flex justify-between items-center px-1 pt-2">
+    <div class="flex justify-between items-center px-1 my-1">
         <p class="text-sm select-none">Rendimiento por {viewMode === 'day' ? 'Día' : 'Hora'}</p>
         <button 
             class="px-2 py-1 text-xs bg-white border rounded hover:bg-gray-100 transition-colors"

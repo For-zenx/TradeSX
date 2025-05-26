@@ -9,10 +9,11 @@
 	import GeneralResume from '$lib/components/dashboard/GeneralResume.svelte';
 	import DrawdownIndex from '$lib/components/dashboard/DrawdownIndex.svelte';
     import TradingCalendar from '$lib/components/dashboard/TradingCalendar.svelte';
-    import { iaResumeStore, getFullResume } from '$lib/stores/iaResume';
+	import WeekdayChart from '$lib/components/dashboard/WeekdayChart.svelte';
+	import LastTrades from '$lib/components/dashboard/LastTrades.svelte';
+    import { getFullResume } from '$lib/stores/iaResume';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
-	import WeekdayChart from '$lib/components/dashboard/WeekdayChart.svelte';
     
     let allTrades: FormattedTrade[] = [];
     let filteredTrades = $state<FormattedTrade[]>([]);
@@ -90,6 +91,7 @@
         <GeneralResume trades={filteredTrades}/>
         <DrawdownIndex trades={filteredTrades}/>
         <WeekdayChart trades={filteredTrades}/>
+        <LastTrades trades={filteredTrades} />
         <TradingCalendar trades={filteredTrades}/>
     </div>
     <div class="flex justify-end mt-4">
