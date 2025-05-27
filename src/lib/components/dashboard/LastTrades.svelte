@@ -1,42 +1,89 @@
 <script lang="ts">
+	import { updateIAResume } from '$lib/stores/iaResume';
 	import type { FormattedTrade } from '$lib/interfaces/trades';
 
 	export let trades: FormattedTrade[] = [];
 
 	let showMode: 'last' | 'best' | 'worst' = 'last';
+	let displayedTrades: { trade: FormattedTrade; index: number; profitPercentage: number }[] = [];
 
+	// Función para calcular el porcentaje de ganancia (existente)
 	function calculateProfitPercentage(trade: FormattedTrade, index: number): number {
 		const previousBalance = index > 0 ? trades[index - 1].saldo : trades[0].saldo - trades[0].neto;
 		const profitPercentage = (trade.neto / previousBalance) * 100;
 		return parseFloat(profitPercentage.toFixed(2));
 	}
 
-	$: displayedTrades = (() => {
-		if (trades.length === 0) return [];
+	// Trades mostrados (existente, modificado para incluir porcentaje)
+	$: {
+		generateIAResume();
+		displayedTrades = (() => {
+			if (trades.length === 0) return [];
 
-		const tradesWithIndex = trades.map((trade, index) => ({ trade, index }));
+			const tradesWithIndex = trades.map((trade, index) => ({
+				trade,
+				index,
+				profitPercentage: calculateProfitPercentage(trade, index)
+			}));
 
-		if (showMode === 'last') {
-			return tradesWithIndex.slice(-5).reverse(); 
-		} else if (showMode === 'best') {
-			return [...tradesWithIndex]
-				.sort(
-					(a, b) =>
-						calculateProfitPercentage(b.trade, b.index) -
-						calculateProfitPercentage(a.trade, a.index)
-				)
-				.slice(0, 5);
-		} else {
-			return [...tradesWithIndex]
-				.sort(
-					(a, b) =>
-						calculateProfitPercentage(a.trade, a.index) -
-						calculateProfitPercentage(b.trade, b.index)
-				)
-				.slice(0, 5);
+			if (showMode === 'last') {
+				return tradesWithIndex.slice(-5).reverse();
+			} else if (showMode === 'best') {
+				return [...tradesWithIndex]
+					.sort((a, b) => b.profitPercentage - a.profitPercentage)
+					.slice(0, 5);
+			} else {
+				return [...tradesWithIndex]
+					.sort((a, b) => a.profitPercentage - b.profitPercentage)
+					.slice(0, 5);
+			}
+		})();
+	}
+
+	// Función para generar el resumen IA
+	function generateIAResume() {
+		if (trades.length === 0) {
+			updateIAResume('lastTrades', 'No hay datos de trades disponibles');
+			return;
 		}
-	})();
 
+		// Obtener últimos 5 trades
+		const lastFive = trades
+			.slice(-5)
+			.reverse()
+			.map((trade, i) => ({
+				...trade,
+				profitPercentage: calculateProfitPercentage(trade, trades.length - 5 + i)
+			}));
+
+		// Obtener mejores 5 trades
+		const bestFive = [...trades]
+			.map((trade, i) => ({ trade, profitPercentage: calculateProfitPercentage(trade, i) }))
+			.sort((a, b) => b.profitPercentage - a.profitPercentage)
+			.slice(0, 5);
+
+		// Obtener peores 5 trades
+		const worstFive = [...trades]
+			.map((trade, i) => ({ trade, profitPercentage: calculateProfitPercentage(trade, i) }))
+			.sort((a, b) => a.profitPercentage - b.profitPercentage)
+			.slice(0, 5);
+
+		const summary = `
+RESUMEN DE TRADES DESTACADOS:
+=== ÚLTIMOS 5 TRADES ===
+${lastFive.map((t) => `- ${t.fecha_cierre.split(' ')[0]} | ${t.direccion} | $${t.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
+
+=== MEJORES 5 TRADES ===
+${bestFive.map((t) => `- ${t.trade.fecha_cierre.split(' ')[0]} | ${t.trade.direccion} | $${t.trade.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
+
+=== PEORES 5 TRADES ===
+${worstFive.map((t) => `- ${t.trade.fecha_cierre.split(' ')[0]} | ${t.trade.direccion} | $${t.trade.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
+`;
+
+		updateIAResume('lastTrades', summary);
+	}
+
+	// Función existente para formatear fecha
 	function formatDate(dateStr: string): string {
 		const [date, time] = dateStr.split(' ');
 		const [day, month] = date.split('/');
@@ -44,6 +91,7 @@
 		return `${day}/${month} ${hours}:${minutes}`;
 	}
 
+	// Función existente para color de dirección
 	function getDirectionColor(direction: string): string {
 		return direction === 'Comprar' ? 'text-green-600' : 'text-red-600';
 	}
