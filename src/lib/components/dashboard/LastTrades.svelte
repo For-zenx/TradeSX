@@ -7,14 +7,12 @@
 	let showMode: 'last' | 'best' | 'worst' = 'last';
 	let displayedTrades: { trade: FormattedTrade; index: number; profitPercentage: number }[] = [];
 
-	// Función para calcular el porcentaje de ganancia (existente)
 	function calculateProfitPercentage(trade: FormattedTrade, index: number): number {
 		const previousBalance = index > 0 ? trades[index - 1].saldo : trades[0].saldo - trades[0].neto;
 		const profitPercentage = (trade.neto / previousBalance) * 100;
 		return parseFloat(profitPercentage.toFixed(2));
 	}
 
-	// Trades mostrados (existente, modificado para incluir porcentaje)
 	$: {
 		generateIAResume();
 		displayedTrades = (() => {
@@ -40,14 +38,12 @@
 		})();
 	}
 
-	// Función para generar el resumen IA
 	function generateIAResume() {
 		if (trades.length === 0) {
 			updateIAResume('lastTrades', 'No hay datos de trades disponibles');
 			return;
 		}
 
-		// Obtener últimos 5 trades
 		const lastFive = trades
 			.slice(-5)
 			.reverse()
@@ -56,13 +52,11 @@
 				profitPercentage: calculateProfitPercentage(trade, trades.length - 5 + i)
 			}));
 
-		// Obtener mejores 5 trades
 		const bestFive = [...trades]
 			.map((trade, i) => ({ trade, profitPercentage: calculateProfitPercentage(trade, i) }))
 			.sort((a, b) => b.profitPercentage - a.profitPercentage)
 			.slice(0, 5);
 
-		// Obtener peores 5 trades
 		const worstFive = [...trades]
 			.map((trade, i) => ({ trade, profitPercentage: calculateProfitPercentage(trade, i) }))
 			.sort((a, b) => a.profitPercentage - b.profitPercentage)
@@ -83,7 +77,6 @@ ${worstFive.map((t) => `- ${t.trade.fecha_cierre.split(' ')[0]} | ${t.trade.dire
 		updateIAResume('lastTrades', summary);
 	}
 
-	// Función existente para formatear fecha
 	function formatDate(dateStr: string): string {
 		const [date, time] = dateStr.split(' ');
 		const [day, month] = date.split('/');
@@ -91,7 +84,6 @@ ${worstFive.map((t) => `- ${t.trade.fecha_cierre.split(' ')[0]} | ${t.trade.dire
 		return `${day}/${month} ${hours}:${minutes}`;
 	}
 
-	// Función existente para color de dirección
 	function getDirectionColor(direction: string): string {
 		return direction === 'Comprar' ? 'text-green-600' : 'text-red-600';
 	}
