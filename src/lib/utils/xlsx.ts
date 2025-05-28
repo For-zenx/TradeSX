@@ -23,7 +23,7 @@ export function processTradeRow(row: unknown): FormattedTrade {
         precio_entrada: convertExcelValue(trade['Precio de entrada']),
         precio_cierre: convertExcelValue(trade['Precio de cierre']),
         cantidad: convertExcelValue(trade['Cantidad de Cierre']),
-        volumen: convertExcelValue(trade['Volumen de Cierre']),
+        volumen: convertExcelValue(trade['Volumen de Cierre en USD']),
         comision: convertExcelValue(trade['Comisión']),
         neto: convertExcelValue(trade['$ neto']),
         saldo: convertExcelValue(trade['Saldo $'])

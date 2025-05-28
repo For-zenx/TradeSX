@@ -6,7 +6,7 @@ export interface RawTrade {
     'Precio de entrada'?: string | number;
     'Precio de cierre'?: string | number;
     'Cantidad de Cierre'?: number;
-    'Volumen de Cierre'?: number;
+    'Volumen de Cierre en USD'?: number;
     'Comisión'?: number;
     '$ neto'?: string | number;
     'Saldo $'?: string | number;
