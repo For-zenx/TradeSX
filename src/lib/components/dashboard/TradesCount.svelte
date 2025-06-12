@@ -186,12 +186,12 @@ RESUMEN RÁPIDO:
 		<div class="h-4 w-px bg-gray-200"></div>
 
 		<div
-			data-tooltip="Win rate: {winRateValue >= 50
+			data-tooltip="Win rate: {winRateValue >= 50 && winRateValue < 60
 				? 'rango optimo'
 				: winRateValue >= 60
 					? 'rango excelente'
 					: 'menor al 50%'}"
-			class="flex items-center gap-1 rounded px-2 py-1 {winRateValue >= 50
+			class="flex items-center gap-1 rounded px-2 py-1 {winRateValue >= 50 && winRateValue < 60
 				? 'bg-blue-50'
 				: winRateValue >= 60
 					? 'bg-green-50'
@@ -199,7 +199,7 @@ RESUMEN RÁPIDO:
 		>
 			<span class="text-sm font-medium text-gray-700"
 				>WR: <span
-					class="text-sm font-semibold {winRateValue >= 50
+					class="text-sm font-semibold {winRateValue >= 50 && winRateValue < 60
 						? 'text-blue-600'
 						: winRateValue >= 60
 							? 'text-green-600'

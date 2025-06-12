@@ -65,13 +65,13 @@
 		const summary = `
 RESUMEN DE TRADES DESTACADOS:
 === ÚLTIMOS 5 TRADES ===
-${lastFive.map((t) => `- ${t.fecha_cierre.split(' ')[0]} | ${t.direccion} | $${t.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
+${lastFive.map((t) => `- ${t.fecha_cierre} | ${t.direccion} | $${t.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
 
 === MEJORES 5 TRADES ===
-${bestFive.map((t) => `- ${t.trade.fecha_cierre.split(' ')[0]} | ${t.trade.direccion} | $${t.trade.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
+${bestFive.map((t) => `- ${t.trade.fecha_cierre} | ${t.trade.direccion} | $${t.trade.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
 
 === PEORES 5 TRADES ===
-${worstFive.map((t) => `- ${t.trade.fecha_cierre.split(' ')[0]} | ${t.trade.direccion} | $${t.trade.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
+${worstFive.map((t) => `- ${t.trade.fecha_cierre} | ${t.trade.direccion} | $${t.trade.neto.toFixed(2)} (${t.profitPercentage}%)`).join('\n')}
 `;
 
 		updateIAResume('lastTrades', summary);

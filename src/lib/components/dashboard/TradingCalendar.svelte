@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { FormattedTrade } from '$lib/interfaces/trades';
+	import { updateIAResume } from '$lib/stores/iaResume';
 
 	type Weekday = 'monday' | 'tuesday' | 'wednesday' | 'thursday' | 'friday';
 
@@ -28,6 +29,8 @@
 	const WEEKDAYS: Weekday[] = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday'];
 
 	export let trades: FormattedTrade[] = [];
+
+	let weeklyData: TradingWeek[] = [];
 
 	function getWeekNumber(date: Date): number {
 		const d = new Date(date);
@@ -129,25 +132,28 @@
 	}
 
 	// ===== LÓGICA PRINCIPAL =====
-	$: weeklyData = (() => {
-		if (trades.length === 0) return [];
+	$: {
+			weeklyData = (() => {
+			if (trades.length === 0) return [];
 
-		// 1. Ordenar trades por fecha
-		const sortedTrades = [...trades].sort(
-			(a, b) =>
-				parseTradeDate(a.fecha_apertura).getTime() - parseTradeDate(b.fecha_apertura).getTime()
-		);
+			// 1. Ordenar trades por fecha
+			const sortedTrades = [...trades].sort(
+				(a, b) =>
+					parseTradeDate(a.fecha_apertura).getTime() - parseTradeDate(b.fecha_apertura).getTime()
+			);
 
-		// 2. Procesar trades
-		const weeksMap = new Map<number, TradingWeek>();
-		sortedTrades.forEach((trade) => processTrade(trade, weeksMap));
+			// 2. Procesar trades
+			const weeksMap = new Map<number, TradingWeek>();
+			sortedTrades.forEach((trade) => processTrade(trade, weeksMap));
 
-		// 3. Calcular porcentajes
-		calculatePercentages(weeksMap);
+			// 3. Calcular porcentajes
+			calculatePercentages(weeksMap);
 
-		// 4. Ordenar semanas (más reciente primero)
-		return Array.from(weeksMap.values()).sort((a, b) => b.weekNumber - a.weekNumber);
-	})();
+			// 4. Ordenar semanas (más reciente primero)
+			return Array.from(weeksMap.values()).sort((a, b) => b.weekNumber - a.weekNumber);
+		})();
+		generateIAResume();
+	};
 
 	let weekTooltips: Record<number, boolean> = {};
 
@@ -164,7 +170,37 @@
 			Object.entries(weekTooltips).map(([weekNumber, _]) => [weekNumber, false])
 		);
 	}
+
+	function generateIAResume() {
+		if (weeklyData.length === 0) {
+			updateIAResume('weeklySummary', 'No hay datos semanales disponibles');
+			return;
+		}
+
+		const summary = weeklyData
+			.map((week) => {
+				// Formatear cada día de la semana
+				const daysSummary = WEEKDAYS.map((dayKey) => {
+					const day = week.days[dayKey];
+					if (!day) return null;
+
+					return `${dayKey.slice(0, 1).toUpperCase()} ${day.date}: ${day.winningTrades}G/${day.losingTrades}P ${day.profitPercentage >= 0 ? '+' : ''}${day.profitPercentage.toFixed(1)}%`;
+				})
+					.filter(Boolean)
+					.join(' | ');
+
+				// Resumen semanal
+				return `Semana ${week.weekNumber}:
+- Días: ${daysSummary || 'Sin operaciones'}
+- Total: ${week.weekSummary.totalWinningTrades}G/${week.weekSummary.totalLosingTrades}P (${((week.weekSummary.totalWinningTrades / week.weekSummary.totalTrades) * 100 || 0).toFixed(1)}% WR)
+- Resultado: ${week.weekSummary.totalProfitPercentage >= 0 ? '+' : ''}${week.weekSummary.totalProfitPercentage.toFixed(1)}% (${week.weekSummary.totalTrades} trades)`;
+			})
+			.join('\n\n');
+
+		updateIAResume('weeklySummary', `RESUMEN SEMANAL:\n${summary}`);
+	}
 </script>
+
 <svelte:window on:click={closeAllTooltips} />
 <div class="col-span-3 h-auto rounded-sm bg-gray-200">
 	<div class="flex items-center justify-between px-1 pt-2">
