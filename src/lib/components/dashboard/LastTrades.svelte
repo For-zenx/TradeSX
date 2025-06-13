@@ -89,78 +89,76 @@ ${worstFive.map((t) => `- ${t.trade.fecha_cierre} | ${t.trade.direccion} | $${t.
 	}
 </script>
 
-<div class="flex h-auto max-h-96 flex-col rounded-sm bg-gray-200">
-	<div class="flex items-center justify-between px-3 pt-2 pb-1">
-		<p class="text-sm">Últimos Trades</p>
-		<div class="flex items-center gap-1">
-			<button
-				class="rounded px-2 py-1 text-xs transition-colors
+<div class="flex flex-col rounded-sm bg-gray-200 h-full">
+    <div class="flex items-center justify-between px-3 pt-2 pb-1">
+        <p class="text-sm">Últimos Trades</p>
+        <div class="flex items-center gap-1">
+            <button
+                class="rounded px-2 py-1 text-xs transition-colors
                     {showMode === 'last'
-					? 'bg-gray-800/80 text-white'
-					: 'bg-gray-100 hover:bg-gray-200'}"
-				on:click={() => (showMode = 'last')}
-			>
-				Últimos
-			</button>
-			<button
-				class="rounded px-2 py-1 text-xs transition-colors
+                    ? 'bg-gray-800/80 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200'}"
+                on:click={() => (showMode = 'last')}
+            >
+                Últimos
+            </button>
+            <button
+                class="rounded px-2 py-1 text-xs transition-colors
                     {showMode === 'best'
-					? 'bg-green-800/80 text-white'
-					: 'bg-gray-100 hover:bg-gray-200'}"
-				on:click={() => (showMode = 'best')}
-			>
-				Mejores
-			</button>
-			<button
-				class="rounded px-2 py-1 text-xs transition-colors
+                    ? 'bg-green-800/80 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200'}"
+                on:click={() => (showMode = 'best')}
+            >
+                Mejores
+            </button>
+            <button
+                class="rounded px-2 py-1 text-xs transition-colors
                     {showMode === 'worst'
-					? 'bg-red-800/80 text-white'
-					: 'bg-gray-100 hover:bg-gray-200'}"
-				on:click={() => (showMode = 'worst')}
-			>
-				Peores
-			</button>
-		</div>
-	</div>
+                    ? 'bg-red-800/80 text-white'
+                    : 'bg-gray-100 hover:bg-gray-200'}"
+                on:click={() => (showMode = 'worst')}
+            >
+                Peores
+            </button>
+        </div>
+    </div>
 
-	<div class="m-1 bg-white">
-		<div
-			class="flex justify-between border-b border-gray-200 bg-gray-100 px-3 py-1 text-xs text-gray-600"
-		>
-			<span>Símbolo/Dirección</span>
-			<span>Fecha</span>
-			<span>Resultado</span>
-		</div>
+    <div class="m-1 bg-white flex flex-col h-[calc(100%-40px)]">
+        <div class="flex justify-between border-b border-gray-200 bg-gray-100 px-3 py-1 text-xs text-gray-600">
+            <span>Símbolo/Dirección</span>
+            <span>Fecha</span>
+            <span>Resultado</span>
+        </div>
 
-		<div class="flex flex-1 flex-col overflow-y-auto bg-white">
-			{#if trades.length === 0}
-				<div class="py-4 text-center text-sm text-gray-500">No hay trades disponibles</div>
-			{:else}
-				<div class="divide-y divide-gray-100">
-					{#each displayedTrades as { trade, index }}
-						<div class="flex items-center justify-between px-3 py-2 hover:bg-gray-50">
-							<div class="flex min-w-0 items-center gap-2">
-								<span class="truncate text-sm font-medium">{trade.simbolo}</span>
-								<span class={`text-xs ${getDirectionColor(trade.direccion)}`}>
-									({trade.direccion === 'Comprar' ? 'L' : 'S'})
-								</span>
-							</div>
+        <div class="flex-1 overflow-y-auto">
+            {#if trades.length === 0}
+                <div class="h-full flex items-center justify-center">
+                    <p class="text-sm text-gray-500">No hay trades disponibles</p>
+                </div>
+            {:else}
+                <div class="divide-y divide-gray-100">
+                    {#each displayedTrades as { trade, index }}
+                        <div class="flex items-center justify-between px-3 py-3 hover:bg-gray-50 h-full">
+                            <div class="flex min-w-0 items-center gap-2 flex-1">
+                                <span class="truncate text-sm font-medium">{trade.simbolo}</span>
+                                <span class={`text-xs ${getDirectionColor(trade.direccion)}`}>
+                                    ({trade.direccion === 'Comprar' ? 'L' : 'S'})
+                                </span>
+                            </div>
 
-							<div class="text-xs whitespace-nowrap text-gray-600">
-								{formatDate(trade.fecha_apertura)}
-							</div>
+                            <div class="text-xs whitespace-nowrap text-gray-600 flex-1 text-center">
+                                {formatDate(trade.fecha_apertura)}
+                            </div>
 
-							<div
-								class={`text-sm font-semibold whitespace-nowrap ${
-									trade.neto >= 0 ? 'text-green-600' : 'text-red-600'
-								}`}
-							>
-								{trade.neto >= 0 ? '+' : ''}{calculateProfitPercentage(trade, index)}%
-							</div>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	</div>
+                            <div class={`text-sm font-semibold whitespace-nowrap flex-1 text-right ${
+                                trade.neto >= 0 ? 'text-green-600' : 'text-red-600'
+                            }`}>
+                                {trade.neto >= 0 ? '+' : ''}{calculateProfitPercentage(trade, index)}%
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+        </div>
+    </div>
 </div>

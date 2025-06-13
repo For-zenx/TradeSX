@@ -259,7 +259,7 @@
                 '')
         ).join('\n');
 
-        const resume = `RENDIMIENTO POR DÍA/HORA (formato compacto):
+        const resume = `RENDIMIENTO POR DÍA/HORA:
 === DÍAS ===
 ${daySummary}
 

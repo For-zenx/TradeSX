@@ -7,6 +7,7 @@ interface IAResume {
     weekdayPerformance?: string;
     lastTrades?: string;
     weeklySummary?: string;
+    volumeSummary?: string;
 }
 
 export const iaResumeStore = writable<IAResume>({});

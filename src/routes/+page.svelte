@@ -14,6 +14,7 @@
     import { getFullResume } from '$lib/stores/iaResume';
     import type { FormattedTrade } from '$lib/interfaces/trades';
     import {onMount} from 'svelte';
+	import VolumeChart from '$lib/components/dashboard/VolumeChart.svelte';
     
     let allTrades: FormattedTrade[] = [];
     let filteredTrades = $state<FormattedTrade[]>([]);
@@ -92,6 +93,7 @@
         <DrawdownIndex trades={filteredTrades}/>
         <WeekdayChart trades={filteredTrades}/>
         <LastTrades trades={filteredTrades} />
+        <VolumeChart trades={filteredTrades}/>
         <TradingCalendar trades={filteredTrades}/>
     </div>
     <div class="flex justify-end mt-4">
