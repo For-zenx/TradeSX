@@ -49,10 +49,10 @@
             createFilter('12 meses', getPrevDate(365), currentDate, '12m'),
             createFilter('6 meses', getPrevDate(180), currentDate, '6m'),
             createFilter('3 meses', getPrevDate(90), currentDate, '3m'),
+            createFilter('2 meses', getPrevDate(60), currentDate, '2m'),
             createFilter('Mes anterior', getFirstDay(getPrevDate(30)), getLastDay(getPrevDate(30)), 'last-month'),
             createFilter('Este mes', getFirstDay(currentDate), currentDate, 'current-month'),
-            createFilter('Ayer', getPrevDate(1), getPrevDate(1), 'yesterday'),
-            createFilter('Hoy', currentDate, currentDate, 'today')
+            createFilter('Esta semana', getPrevDate(7), currentDate, '1w'),
         ]
     };
 

@@ -3,11 +3,12 @@ import { writable } from 'svelte/store';
 interface IAResume {
     tradesCount?: string;
     generalResume?: string;
+    capitalChart?: string;
     drawdown?: string;
     weekdayPerformance?: string;
     lastTrades?: string;
-    weeklySummary?: string;
     volumeSummary?: string;
+    weeklySummary?: string;
 }
 
 export const iaResumeStore = writable<IAResume>({});
