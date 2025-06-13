@@ -242,35 +242,29 @@
         const dayStats = processTradesByWeekday(trades);
         const hourStats = processTradesByHour(trades);
 
-        const winningTrades = trades.filter(t => t.neto >= 0);
-        const losingTrades = trades.filter(t => t.neto < 0);
-        
-        const totalWinners = winningTrades.length;
-        const totalLosers = losingTrades.length;
-        const totalProfit = trades.reduce((sum, t) => sum + t.neto, 0);
-        
-        const avgWin = totalWinners > 0 
-            ? winningTrades.reduce((sum, t) => sum + t.neto, 0) / totalWinners 
-            : 0;
-        const avgLoss = totalLosers > 0 
-            ? Math.abs(losingTrades.reduce((sum, t) => sum + t.neto, 0)) / totalLosers 
-            : 0;
+        // Resumen por día (formato compacto)
+        const daySummary = dayStats.days.map((day, i) => 
+            `${day.slice(0, 3)}: ${dayStats.winners[i]}G/${dayStats.losers[i]}P ` +
+            `(${(dayStats.winners[i]/dayStats.volume[i]*100 || 0).toFixed(0)}%) ` +
+            `Neto: $${dayStats.netProfit[i].toFixed(2)} ` +
+            `(AvgG: $${dayStats.avgWin[i].toFixed(2)}/AvgP: $${dayStats.avgLoss[i].toFixed(2)})`
+        ).join('\n');
 
-        const resume = `## RENDIMIENTO POR DÍA (LUNES-VIERNES)
-${dayStats.days.map((day, i) => `
-### ${day}
-- Trades: ${dayStats.volume[i]} (${dayStats.winners[i]}G / ${dayStats.losers[i]}P)
-- Ganancia promedio (G): $${dayStats.avgWin[i].toFixed(2)}
-- Pérdida promedio (P): $${dayStats.avgLoss[i].toFixed(2)}
-- Beneficio neto: $${dayStats.netProfit[i].toFixed(2)}`).join('')}
+        // Resumen por hora (formato compacto)
+        const hourSummary = timeSegments.map((seg, i) => 
+            `${seg.label.padEnd(8)}: ${hourStats.winners[i]}G/${hourStats.losers[i]}P ` +
+            `Neto: $${hourStats.netProfit[i].toFixed(2)}` +
+            (hourStats.volume[i] > 0 ? 
+                ` (${(hourStats.winners[i]/hourStats.volume[i]*100 || 0).toFixed(0)}%)` : 
+                '')
+        ).join('\n');
 
-## RENDIMIENTO POR HORARIO (EST NY TIME)
-${timeSegments.map((seg, i) => `
-### ${seg.label}
-- Trades: ${hourStats.volume[i]} (${hourStats.winners[i]}G / ${hourStats.losers[i]}P)
-- Ganancia promedio (G): $${hourStats.avgWin[i].toFixed(2)}
-- Pérdida promedio (P): $${hourStats.avgLoss[i].toFixed(2)}
-- Beneficio neto: $${hourStats.netProfit[i].toFixed(2)}`).join('')}`;
+        const resume = `RENDIMIENTO POR DÍA/HORA (formato compacto):
+=== DÍAS ===
+${daySummary}
+
+=== HORAS ===
+${hourSummary}`;
 
         updateIAResume('weekdayPerformance', resume);
     }
