@@ -3,7 +3,6 @@ import { writable } from 'svelte/store';
 interface IAResume {
     tradesCount?: string;
     generalResume?: string;
-    capitalChart?: string;
     drawdown?: string;
     weekdayPerformance?: string;
     lastTrades?: string;

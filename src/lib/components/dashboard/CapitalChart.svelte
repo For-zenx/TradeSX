@@ -2,7 +2,6 @@
 	import { onMount } from 'svelte';
 	import Chart from 'chart.js/auto';
 	import type { FormattedTrade } from '$lib/interfaces/trades';
-	import { updateIAResume } from '$lib/stores/iaResume';
 
 	export let trades: FormattedTrade[] = [];
 	let chart: Chart;
@@ -15,7 +14,6 @@
 	$: if (trades.length > 0) {
 		if (chart) chart.destroy();
 		renderChart();
-		generateIAResume();
 	}
 
 	function renderChart() {
@@ -161,118 +159,6 @@
 			'Dic'
 		];
 		return months[month - 1] || '';
-	}
-
-	function generateCapitalASCII(processedData: ReturnType<typeof processTrades>) {
-		if (processedData.dates.length === 0) return 'No hay datos suficientes';
-
-		// Configuración
-		const width = 50; // Ancho fijo para simplificar
-		const height = 10;
-		const riskZones = { high: 0.05, medium: 0.03 };
-
-		const step = Math.max(1, Math.ceil(processedData.dates.length / width));
-		const simplifiedData = {
-			dates: [] as string[],
-			balances: [] as number[],
-			mins: [] as number[],
-			maxs: [] as number[],
-			drawdowns: [] as number[]
-		};
-
-		let peak = processedData.balances[0];
-		for (let i = 0; i < processedData.dates.length; i += step) {
-			simplifiedData.dates.push(processedData.dates[i]);
-			simplifiedData.balances.push(processedData.balances[i]);
-			simplifiedData.mins.push(processedData.minBalances[i]);
-			simplifiedData.maxs.push(processedData.maxBalances[i]);
-
-			peak = Math.max(peak, processedData.balances[i]);
-			const dd = (peak - processedData.balances[i]) / peak;
-			simplifiedData.drawdowns.push(dd);
-		}
-		if (!simplifiedData.dates.includes(processedData.dates.slice(-1)[0])) {
-			const lastIdx = processedData.dates.length - 1;
-			simplifiedData.dates.push(processedData.dates[lastIdx]);
-			simplifiedData.balances.push(processedData.balances[lastIdx]);
-			simplifiedData.mins.push(processedData.minBalances[lastIdx]);
-			simplifiedData.maxs.push(processedData.maxBalances[lastIdx]);
-			const dd = (peak - processedData.balances[lastIdx]) / peak;
-			simplifiedData.drawdowns.push(dd);
-		}
-
-		const minVal = Math.min(...simplifiedData.mins);
-		const maxVal = Math.max(...simplifiedData.maxs);
-		const range = maxVal - minVal || 1;
-		const normalize = (value: number) => Math.round(((value - minVal) / range) * (height - 1));
-
-		const graph = Array(height)
-			.fill(null)
-			.map(() => Array(simplifiedData.dates.length).fill(' '));
-
-		for (let x = 0; x < simplifiedData.dates.length; x++) {
-			const top = normalize(simplifiedData.maxs[x]);
-			const bottom = normalize(simplifiedData.mins[x]);
-			if ((simplifiedData.maxs[x] - simplifiedData.mins[x]) / maxVal > 0.02) {
-				for (let y = bottom; y <= top; y++) graph[y][x] = '·';
-			}
-
-			const y = normalize(simplifiedData.balances[x]);
-			graph[y][x] =
-				simplifiedData.drawdowns[x] >= riskZones.high
-					? '‼'
-					: simplifiedData.drawdowns[x] >= riskZones.medium
-						? '!'
-						: 'o';
-
-			if (x > 0) {
-				const prevY = normalize(simplifiedData.balances[x - 1]);
-				const dir = prevY < y ? 1 : -1;
-				for (let cy = prevY; cy !== y; cy += dir) {
-					if (graph[cy][x] === ' ') graph[cy][x] = '|';
-				}
-			}
-		}
-
-		let asciiChart = 'CAPITAL CHART (Balance vs Tiempo)\n↑\n';
-
-		for (let y = height - 1; y >= 0; y--) {
-			const yValue = minVal + (y / (height - 1)) * range;
-			asciiChart += `$${Math.round(yValue)}`.padStart(6) + ' | ' + graph[y].join('') + '\n';
-		}
-
-		const startDate = simplifiedData.dates[0];
-		const endDate = simplifiedData.dates.slice(-1)[0];
-		asciiChart += '      +-' + '-'.repeat(simplifiedData.dates.length) + '→\n';
-		asciiChart += `       ${(startDate)}${' '.repeat(simplifiedData.dates.length - 12)}${(endDate)}\n`;
-
-		// Leyenda
-		const maxDD = (Math.max(...simplifiedData.drawdowns) * 100).toFixed(1);
-		asciiChart += `\nLEYENDA: 'o'=Close | '·'=Range | '!'=3-5% DD | '‼'=>5% DD`;
-		asciiChart += `\nPeriodo: ${startDate} hasta ${endDate}`;
-		asciiChart += `\nPico: $${Math.round(maxVal)} | Min: $${Math.round(minVal)}`;
-
-		return asciiChart;
-	}
-
-	function generateIAResume() {
-		if (trades.length === 0) {
-			updateIAResume('capitalChart', 'No hay datos de capital disponibles');
-			return;
-		}
-
-		const processedData = processTrades(trades);
-		const asciiChart = generateCapitalASCII(processedData);
-
-		// Información adicional para la IA
-		const initialBalance = processedData.balances[0];
-		const finalBalance = processedData.balances[processedData.balances.length - 1];
-		const profit = finalBalance - initialBalance;
-		const profitPercentage = (profit / initialBalance) * 100;
-
-		const resume = `REPRESENTACIÓN DEL CAPITAL:\n${asciiChart}`;
-
-		updateIAResume('capitalChart', resume);
 	}
 </script>
 

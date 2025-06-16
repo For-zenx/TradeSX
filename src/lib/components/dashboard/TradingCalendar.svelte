@@ -211,7 +211,7 @@
 			<div class="relative max-h-120 overflow-y-auto">
 				<table class="mt-4 w-full border-collapse">
 					<!-- Encabezados -->
-					<thead class="sticky top-0 z-10 bg-gray-50">
+					<thead class="sticky top-0 z-10 bg-white">
 						<tr class="text-gray-700">
 							<th class="sticky left-0 z-20 p-1 text-left">
 								<div class="rounded border border-gray-400/90 p-2">
