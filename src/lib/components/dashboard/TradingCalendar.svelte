@@ -265,7 +265,12 @@
 										<div
 											class="flex h-full flex-col justify-between rounded-lg border border-gray-300 bg-white p-3"
 										>
-											<div class="text-sm font-medium text-gray-500">{week.days.monday.date}</div>
+											<div class="flex justify-between items-start">
+												<div class="text-sm font-medium text-gray-500">{week.days.monday.date}</div>
+												<div class="text-xs font-medium {week.days.monday.profitAmount >= 0 ? 'text-gray-500' : 'text-gray-500'}">
+													{week.days.monday.profitAmount >= 0 ? '+' : ''}{week.days.monday.profitAmount.toFixed(2)}$
+												</div>
+											</div>
 											<div class="text-center">
 												<div
 													class="text-xl font-bold {week.days.monday.profitPercentage >= 0
@@ -301,7 +306,12 @@
 										<div
 											class="flex h-full flex-col justify-between rounded-lg border border-gray-300 bg-white p-3"
 										>
+																						<div class="flex justify-between items-start">
 											<div class="text-sm font-medium text-gray-500">{week.days.tuesday.date}</div>
+												<div class="text-xs font-medium {week.days.tuesday.profitAmount >= 0 ? 'text-gray-500' : 'text-gray-500'}">
+													{week.days.tuesday.profitAmount >= 0 ? '+' : ''}{week.days.tuesday.profitAmount.toFixed(2)}$
+												</div>
+											</div>
 											<div class="text-center">
 												<div
 													class="text-xl font-bold {week.days.tuesday.profitPercentage >= 0
@@ -337,8 +347,11 @@
 										<div
 											class="flex h-full flex-col justify-between rounded-lg border border-gray-300 bg-white p-3"
 										>
-											<div class="text-sm font-medium text-gray-500">
-												{week.days.wednesday.date}
+											<div class="flex justify-between items-start">
+												<div class="text-sm font-medium text-gray-500">{week.days.wednesday.date}</div>
+												<div class="text-xs font-medium {week.days.wednesday.profitAmount >= 0 ? 'text-gray-500' : 'text-gray-500'}">
+													{week.days.wednesday.profitAmount >= 0 ? '+' : ''}{week.days.wednesday.profitAmount.toFixed(2)}$
+												</div>
 											</div>
 											<div class="text-center">
 												<div
@@ -375,7 +388,12 @@
 										<div
 											class="flex h-full flex-col justify-between rounded-lg border border-gray-300 bg-white p-3"
 										>
-											<div class="text-sm font-medium text-gray-500">{week.days.thursday.date}</div>
+											<div class="flex justify-between items-start">
+												<div class="text-sm font-medium text-gray-500">{week.days.thursday.date}</div>
+												<div class="text-xs font-medium {week.days.thursday.profitAmount >= 0 ? 'text-gray-500' : 'text-gray-500'}">
+													{week.days.thursday.profitAmount >= 0 ? '+' : ''}{week.days.thursday.profitAmount.toFixed(2)}$
+												</div>
+											</div>
 											<div class="text-center">
 												<div
 													class="text-xl font-bold {week.days.thursday.profitPercentage >= 0
@@ -411,7 +429,12 @@
 										<div
 											class="flex h-full flex-col justify-between rounded-lg border border-gray-300 bg-white p-3"
 										>
-											<div class="text-sm font-medium text-gray-500">{week.days.friday.date}</div>
+											<div class="flex justify-between items-start">
+												<div class="text-sm font-medium text-gray-500">{week.days.friday.date}</div>
+												<div class="text-xs font-medium {week.days.friday.profitAmount >= 0 ? 'text-gray-500' : 'text-gray-500'}">
+													{week.days.friday.profitAmount >= 0 ? '+' : ''}{week.days.friday.profitAmount.toFixed(2)}$
+												</div>
+											</div>
 											<div class="text-center">
 												<div
 													class="text-xl font-bold {week.days.friday.profitPercentage >= 0
@@ -446,7 +469,7 @@
 										class={`flex h-full flex-col items-center justify-center rounded-lg p-2 ${
 											week.weekSummary.totalWinningTrades >= week.weekSummary.totalLosingTrades &&
 											week.weekSummary.totalProfitPercentage >= 0 &&
-											week.weekSummary.totalTrades <= 16
+											week.weekSummary.totalTrades <= 13
 												? 'border border-green-100 bg-green-50'
 												: 'border border-red-100 bg-red-50'
 										}`}
@@ -469,12 +492,12 @@
 													<p class="font-medium">Criterios de evaluación:</p>
 													<ul class="mt-1 space-y-1">
 														<li
-															class={week.weekSummary.totalTrades <= 16
+															class={week.weekSummary.totalTrades <= 13
 																? 'text-green-600'
 																: 'text-red-600'}
 														>
-															Total trades ≤ 16 ({week.weekSummary.totalTrades}) {week.weekSummary
-																.totalTrades <= 16
+															Total trades ≤ 13 ({week.weekSummary.totalTrades}) {week.weekSummary
+																.totalTrades <= 13
 																? '✓'
 																: '✗'}
 														</li>
@@ -505,7 +528,7 @@
 													</ul>
 													<p class="mt-2 font-medium">
 														Resultado final: {[
-															week.weekSummary.totalTrades <= 16,
+															week.weekSummary.totalTrades <= 13,
 															week.weekSummary.totalProfitPercentage >= 0,
 															week.weekSummary.totalWinningTrades >=
 																week.weekSummary.totalLosingTrades
