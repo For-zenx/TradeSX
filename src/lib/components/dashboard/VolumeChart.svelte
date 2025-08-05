@@ -15,7 +15,6 @@
 		totalVolume: number;
 	}
 
-	// Convertimos estas variables en reactivas con $:
 	$: symbolsStats = (() => {
 		const statsMap = new Map<string, SymbolStats>();
 

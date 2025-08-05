@@ -67,7 +67,7 @@
 
 		const longTrades = trades.filter((t) => t.direccion === 'Comprar');
 		const shortTrades = trades.filter((t) => t.direccion === 'Vender');
-		const winningTrades = trades.filter((t) => t.neto > 0);
+		const winningTrades = trades.filter((t) => t.neto >= 0);
 		const losingTrades = trades.filter((t) => t.neto < 0);
 		const longWinning = longTrades.filter((t) => t.neto > 0);
 		const longLosing = longTrades.filter((t) => t.neto < 0);

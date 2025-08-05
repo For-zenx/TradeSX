@@ -13,7 +13,6 @@
 	let totalProfit: number = 0;
 	let totalLoss: number = 0;
 	let netProfit: number = 0;
-	let totalCommissions: number = 0;
 
 	$: {
 		const stats = {
@@ -25,19 +24,17 @@
 			totalProfit: 0,
 			totalLoss: 0,
 			netProfit: 0,
-			totalCommissions: 0,
 		};
 
 		if (trades.length > 0) {
 			trades.forEach((trade) => {
-				if (trade.neto > 0) {
+				if (trade.neto >= 0) {
 					stats.wins++;
 					stats.totalProfit += trade.neto;
 				} else if (trade.neto < 0) {
 					stats.losses++;
 					stats.totalLoss += Math.abs(trade.neto);
 				}
-				stats.totalCommissions += trade.comision || 0; // Sumar comisiones
 			});
 
 			stats.total = trades.length;
@@ -57,7 +54,6 @@
 		totalProfit = stats.totalProfit;
 		totalLoss = stats.totalLoss;
 		netProfit = stats.netProfit;
-		totalCommissions = stats.totalCommissions; // Nuevo
 
 		generateIAResume();
 	}
@@ -96,9 +92,7 @@ RESUMEN RÁPIDO:
 - Balance final: $${finalBalance.toFixed(2)}
 - Ganancias totales: $${totalProfit.toFixed(2)} (${(totalProfit / initialBalance * 100).toFixed(2)}%)
 - Pérdidas totales: $${totalLoss.toFixed(2)} (${(totalLoss / initialBalance * 100).toFixed(2)}%)
-- Comisiones totales: $${totalCommissions.toFixed(2)} (${(totalCommissions / initialBalance * 100).toFixed(2)}%)
-- Comisión promedio por trade: $${(totalCommissions / total).toFixed(2)}
-- Ganancia neta: $${netProfit.toFixed(2)} (${profitPercentage.toFixed(2)}% de efectividad), incluye comisiones
+- Ganancia neta: $${netProfit.toFixed(2)} (${profitPercentage.toFixed(2)}% de efectividad)
 - Trades por día (average): ${tradesPerDay}
 `;
 
@@ -211,14 +205,5 @@ RESUMEN RÁPIDO:
 		</div>
 
 		<div class="h-4 w-px bg-gray-200"></div>
-
-		<div 
-			data-tooltip="Avg: ${(totalCommissions / total).toFixed(2)}"
-			class="flex items-center gap-1"
-		>
-			<span class="text-sm font-medium text-gray-700"
-				>Comisiones: <span class="text-right text-sm font-semibold text-gray-800">${totalCommissions.toFixed()}</span></span
-			>
-		</div>
 	</div>
 </div>
