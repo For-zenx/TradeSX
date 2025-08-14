@@ -5,6 +5,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import type { FormattedTrade } from '$lib/interfaces/trades';
+    import type { SurveyEntry } from '$lib/interfaces/survey';
     let trades = [] as FormattedTrade[];
     let loading = true;
     let error: string | null = null;
@@ -24,6 +25,23 @@
             loading = false;
         }
     });
+
+    let questionnaire: SurveyEntry[] = [];
+    
+    onMount(async () => {
+        const res = await fetch('/api/surveys');
+        questionnaire = await res.json();
+        console.log('Save response:', questionnaire);
+    });
+
+    async function saveEntry(id: number, expectativa: number) {
+        const response = await fetch('/api/surveys', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ id, expectativa })
+        });
+        return await response.json();
+    }
 </script>
 
 <div class="container mx-auto">
@@ -43,13 +61,13 @@
             <table class="min-w-full bg-white border border-gray-200 rounded-lg overflow-hidden">
                 <thead class="bg-gray-50">
                     <tr class="*:px-6 *:py-3 *:text-left *:text-xs *:font-medium *:text-gray-500 *:uppercase *:tracking-wider">
+                        <th>ID</th>
                         <th>Símbolo</th>
                         <th>Dirección</th>
                         <th>Fecha de Cierre</th>
                         <th>Precio Entrada</th>
                         <th>Precio Cierre</th>
                         <th>Cantidad</th>
-                        <th>Volumen</th>
                         <th>Neto</th>
                         <th>Saldo</th>
                     </tr>
@@ -57,6 +75,7 @@
                 <tbody class="divide-y divide-gray-200">
                     {#each trades as trade}
                         <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">{trade.id}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{trade.simbolo}</td>
                             <td class={`px-6 py-4 whitespace-nowrap text-sm ${trade.direccion === 'Comprar' ? 'text-green-600' : 'text-red-600'}`}>
                                 {trade.direccion}
@@ -65,7 +84,6 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{trade.precio_entrada.toFixed(2)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{trade.precio_cierre.toFixed(2)}</td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{trade.cantidad}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{trade.volumen}</td>
                             <td class={`px-6 py-4 whitespace-nowrap text-sm font-medium ${trade.neto >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                                 {trade.neto.toFixed(2)}
                             </td>
