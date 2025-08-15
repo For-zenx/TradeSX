@@ -1,7 +1,7 @@
 export interface RawTrade {
     'Símbolo'?: string;
     'Dirección de apertura'?: string;
-    'ID'?: string;
+    'ID'?: number;
     'Hora de apertura'?: string;
     'Hora de cierre'?: string;
     'Precio de entrada'?: string | number;
@@ -16,7 +16,7 @@ export interface RawTrade {
 export interface FormattedTrade {
     simbolo: string;
     direccion: string;
-    id: string;
+    id: number;
     fecha_apertura: string;
     fecha_cierre: string;
     precio_entrada: number;

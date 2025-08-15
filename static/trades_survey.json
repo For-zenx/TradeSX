@@ -1,6 +1,19 @@
 [
-    {
-        "id":1,
-        "expectativa": 60
-    }
+  {
+    "id": 34463389,
+    "expectativa": 20
+  },
+  {
+    "id": 34463363,
+    "expectativa": 20
+  },
+  {
+    "id": 34550005,
+    "expectativa": 65,
+    "stopLossMoved": true,
+    "setup": "Second Entry",
+    "tendencia": "Bajista",
+    "emocion": "Temeroso",
+    "comentario": "Trump estaba hablando, no debí haber entrado durante este evento, ya que pudo haber pasado cualquier cosa."
+  }
 ]

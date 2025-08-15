@@ -18,7 +18,7 @@ export function processTradeRow(row: unknown): FormattedTrade {
     return {
         simbolo: trade['Símbolo'] || '',
         direccion: trade['Dirección de apertura'] || '',
-        id: trade['ID'] || '',
+        id: trade['ID'] ? Number(trade['ID']) : 0,
         fecha_apertura: trade['Hora de apertura'] || '',
         fecha_cierre: trade['Hora de cierre'] || '',
         precio_entrada: convertExcelValue(trade['Precio de entrada']),
