@@ -1,6 +1,8 @@
 node_modules
 *xlsx
 
+/static/*.json
+
 # Output
 .output
 .vercel
